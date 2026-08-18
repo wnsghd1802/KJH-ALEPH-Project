@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Network & Security Profile">
+  <title>Network & Security Profile</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --surface: #121a2d;
+      --surface-2: #18233b;
+      --text: #edf2f7;
+      --muted: #9aa8bd;
+      --accent: #5eead4;
+      --accent-2: #60a5fa;
+      --border: rgba(255,255,255,.09);
+      --max: 1050px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Inter, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(96,165,250,.14), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(94,234,212,.10), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max));
+      margin: 0 auto;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(11,16,32,.72);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-weight: 800;
+      letter-spacing: -.03em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero {
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr .8fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: .88rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
+    }
+
+    h1 {
+      font-size: clamp(3rem, 8vw, 6.2rem);
+      line-height: .98;
+      letter-spacing: -.065em;
+      margin-bottom: 28px;
+    }
+
+    h1 .gradient {
+      background: linear-gradient(100deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 650px;
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(24,35,59,.92), rgba(18,26,45,.86));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.25);
+    }
+
+    .terminal {
+      color: #cbd5e1;
+      font: 500 .88rem/1.8 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .terminal .green { color: var(--accent); }
+    .terminal .blue { color: var(--accent-2); }
+    .terminal .dim { color: #64748b; }
+
+    section { padding: 100px 0; }
+
+    .section-label {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: .75rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -.04em;
+      margin-bottom: 42px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(18,26,45,.72);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 26px;
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(94,234,212,.28);
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .card ul {
+      list-style: none;
+      display: grid;
+      gap: 7px;
+    }
+
+    .card li::before {
+      content: "›";
+      color: var(--accent);
+      margin-right: 8px;
+    }
+
+    .cert-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .cert {
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(24,35,59,.9), rgba(18,26,45,.75));
+    }
+
+    .cert-number {
+      font: 700 1rem ui-monospace, monospace;
+      color: var(--accent);
+      margin-bottom: 22px;
+    }
+
+    .cert h3 { font-size: 1.08rem; }
+
+    .experience {
+      border-left: 2px solid rgba(94,234,212,.4);
+      padding-left: 28px;
+      max-width: 850px;
+    }
+
+    .experience .period {
+      color: var(--accent);
+      font: 700 .85rem ui-monospace, monospace;
+      margin-bottom: 8px;
+    }
+
+    .experience h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .experience p { color: var(--muted); }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 24px;
+    }
+
+    .tag {
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      color: #cbd5e1;
+      font-size: .82rem;
+    }
+
+    .closing {
+      text-align: center;
+      padding: 120px 0;
+    }
+
+    .closing h2 { margin-bottom: 15px; }
+
+    .closing p {
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      color: #64748b;
+      font-size: .8rem;
+      padding: 28px 0;
+      text-align: center;
+    }
+
+    @media (max-width: 800px) {
+      .hero-grid, .cards, .cert-list {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+        padding-top: 120px;
+      }
+
+      .nav-links { display: none; }
+
+      section { padding: 75px 0; }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo">NETWORK<span>.</span>SECURITY</div>
+      <div class="nav-links">
+        <a href="#about">Profile</a>
+        <a href="#certificates">Certificates</a>
+        <a href="#experience">Experience</a>
+        <a href="#skills">Skills</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">NETWORK & SECURITY</div>
+          <h1>
+            Network.<br>
+            <span class="gradient">Security.</span><br>
+            Infrastructure.
+          </h1>
+          <p>
+            네트워크 보안과 네트워크 인프라 구축을 중심으로
+            실무 경험을 쌓아온 엔지니어입니다.
+            안정적인 네트워크와 보안 환경을 만드는 것을 지향합니다.
+          </p>
+        </div>
+
+        <div class="hero-card">
+          <div class="terminal">
+            <div><span class="dim">$</span> whoami</div>
+            <div class="green">network_security_engineer</div>
+            <br>
+            <div><span class="dim">$</span> experience</div>
+            <div class="blue">1 year / Network & Security</div>
+            <br>
+            <div><span class="dim">$</span> focus</div>
+            <div>Network Infrastructure</div>
+            <div>Network Security</div>
+            <div>Linux</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container">
+        <div class="section-label">01 / Profile</div>
+        <h2>제가 다루는 분야</h2>
+
+        <div class="cards">
+          <article class="card">
+            <h3>Network</h3>
+            <ul>
+              <li>VLAN / Subnetting</li>
+              <li>Routing / RIP</li>
+              <li>ACL</li>
+              <li>Network Infrastructure</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>Security</h3>
+            <ul>
+              <li>Network Security</li>
+              <li>Firewall / VPN</li>
+              <li>IDS / IPS</li>
+              <li>Traffic Analysis</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>System</h3>
+            <ul>
+              <li>Linux Administration</li>
+              <li>Network Service Configuration</li>
+              <li>System & Network Troubleshooting</li>
+              <li>Security Tools</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="certificates">
+      <div class="container">
+        <div class="section-label">02 / Certificates</div>
+        <h2>자격증</h2>
+
+        <div class="cert-list">
+          <article class="cert">
+            <div class="cert-number">CERT. 01</div>
+            <h3>정보보안산업기사</h3>
+          </article>
+
+          <article class="cert">
+            <div class="cert-number">CERT. 02</div>
+            <h3>네트워크관리사 2급</h3>
+          </article>
+
+          <article class="cert">
+            <div class="cert-number">CERT. 03</div>
+            <h3>리눅스마스터 2급</h3>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="container">
+        <div class="section-label">03 / Experience</div>
+        <h2>경력</h2>
+
+        <div class="experience">
+          <div class="period">1 YEAR / NETWORK & SECURITY</div>
+          <h3>네트워크 보안 · 네트워크 설치 관련 실무</h3>
+          <p>
+            네트워크 보안 및 네트워크 설치 관련 회사에서 1년간 근무하며
+            네트워크 인프라 구축과 보안 환경을 실무에서 경험했습니다.
+          </p>
+
+          <div class="tags">
+            <span class="tag">Network Installation</span>
+            <span class="tag">Network Security</span>
+            <span class="tag">Infrastructure</span>
+            <span class="tag">Troubleshooting</span>
+            <span class="tag">Network Equipment</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="container">
+        <div class="section-label">04 / Technical Skills</div>
+        <h2>Technical Stack</h2>
+
+        <div class="cards">
+          <article class="card">
+            <h3>Networking</h3>
+            <p>VLAN · Routing · ACL · RIP · Subnetting · TCP/IP</p>
+          </article>
+
+          <article class="card">
+            <h3>Security</h3>
+            <p>Firewall · VPN · IDS/IPS · Snort · Wireshark · Nmap</p>
+          </article>
+
+          <article class="card">
+            <h3>Linux</h3>
+            <p>Rocky Linux · CentOS · Ubuntu · System Administration</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="container">
+        <div class="section-label">05 / Direction</div>
+        <h2>Network × Security</h2>
+        <p>
+          네트워크의 구조를 이해하고, 보안 관점에서 문제를 바라보며,
+          안정적인 인프라를 구축할 수 있는 엔지니어를 지향합니다.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Network & Security Profile · Personal Portfolio
+  </footer>
+</body>
+</html>
