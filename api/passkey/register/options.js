@@ -16,6 +16,7 @@ export default async function handler(req, res) {
   try {
     const name = String(req.body?.name || '').trim();
     const authenticatorType = String(req.body?.authenticatorType || 'localDevice');
+    const testMode = req.body?.testMode === true;
     const allowedAuthenticatorTypes = new Set(['remoteDevice', 'securityKey', 'localDevice']);
     if (!name || name.length > 40) {
       return jsonError(res, 400, 'INVALID_NAME', '패스키 이름은 1~40자로 입력해 주세요.');
@@ -34,8 +35,9 @@ export default async function handler(req, res) {
 
     if (existingError) throw existingError;
 
-    // Card 2는 최초 등록만 엽니다. Card 4에서 로그인된 세션으로 추가 등록을 허용합니다.
-    if ((existing || []).length > 0) {
+    // 일반 등록은 최초 1개만 허용합니다.
+    // Card 2 취소 테스트(testMode)는 기존 패스키가 있어도 challenge 발급만 허용합니다.
+    if (!testMode && (existing || []).length > 0) {
       return jsonError(res, 409, 'FIRST_PASSKEY_ALREADY_REGISTERED', '첫 패스키가 이미 등록되어 있습니다. 추가 등록은 Card 4에서 진행합니다.');
     }
 
@@ -46,10 +48,12 @@ export default async function handler(req, res) {
       userName: OWNER_ID,
       userDisplayName: 'Portfolio Owner',
       attestationType: 'none',
-      excludeCredentials: (existing || []).map((item) => ({
-        id: item.credential_id,
-        transports: item.transports || [],
-      })),
+      excludeCredentials: testMode
+        ? []
+        : (existing || []).map((item) => ({
+            id: item.credential_id,
+            transports: item.transports || [],
+          })),
       authenticatorSelection: {
         residentKey: 'required',
         userVerification: 'required',
@@ -87,6 +91,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       ok: true,
+      testMode,
       registrationId: challengeRow.id,
       optionsJSON,
     });

@@ -660,6 +660,51 @@
       line-height: 1.45;
     }
 
+
+    .cancel-test-box {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px dashed rgba(96,165,250,.30);
+      border-radius: 14px;
+      background: rgba(96,165,250,.045);
+    }
+
+    .cancel-test-box strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #dbe7f5;
+      font-size: .9rem;
+    }
+
+    .cancel-test-box p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.55;
+    }
+
+    .cancel-test-button {
+      width: 100%;
+      border: 1px solid rgba(96,165,250,.28);
+      border-radius: 11px;
+      padding: 11px 13px;
+      background: rgba(96,165,250,.08);
+      color: #dbeafe;
+      font: 800 .82rem inherit;
+      cursor: pointer;
+    }
+
+    .cancel-test-button:hover,
+    .cancel-test-button:focus-visible {
+      border-color: rgba(96,165,250,.55);
+      background: rgba(96,165,250,.12);
+    }
+
+    .cancel-test-button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
     .method-caption {
       color: var(--muted);
       font-size: .79rem;
@@ -1217,6 +1262,18 @@
               <div><strong>VERIFY</strong> -</div>
               <div><strong>SERVER SAVE</strong> -</div>
             </div>
+
+            <div class="cancel-test-box">
+              <strong>Card 2 검증 도구</strong>
+              <p>
+                첫 패스키가 이미 등록된 상태에서도 새 challenge를 한 번 발급해
+                패스키 등록 창의 <b>취소 처리</b>를 확인합니다.
+                기존 패스키는 삭제되거나 변경되지 않습니다.
+              </p>
+              <button class="cancel-test-button" id="cancel-test-button" type="button" disabled>
+                등록 취소 테스트
+              </button>
+            </div>
           </div>
 
           <aside class="private-info">
@@ -1261,6 +1318,7 @@
     const passkeyName = document.getElementById('passkey-name');
     const passkeyList = document.getElementById('passkey-list');
     const evidenceBox = document.getElementById('registration-evidence');
+    const cancelTestButton = document.getElementById('cancel-test-button');
 
     const registerLocalButton = document.getElementById('register-local');
     const registerRemoteButton = document.getElementById('register-remote');
@@ -1426,11 +1484,13 @@
 
         if (!data.passkeys.length) {
           hasRegisteredPasskey = false;
+          cancelTestButton.disabled = true;
           passkeyList.innerHTML = '<div class="passkey-row"><span>아직 등록된 패스키가 없습니다.</span></div>';
           return;
         }
 
         hasRegisteredPasskey = true;
+        cancelTestButton.disabled = false;
         passkeyList.innerHTML = data.passkeys.map((item) => {
           const when = new Date(item.createdAt).toLocaleString('ko-KR');
           const device = item.deviceType === 'multiDevice'
@@ -1464,11 +1524,11 @@
       }
     }
 
-    async function registerPasskey(authType) {
+    async function registerPasskey(authType, testMode = false) {
       const meta = authTypeMeta[authType];
       if (!meta) return;
 
-      const name = passkeyName.value.trim();
+      const name = testMode ? 'Card2-Cancel-Test' : passkeyName.value.trim();
       if (!name) {
         authStatus.textContent = '패스키 이름을 먼저 입력해 주세요.';
         passkeyName.focus();
@@ -1481,9 +1541,12 @@
       }
 
       setRegistrationControlsDisabled(true);
-      evidence.method = meta.label;
+      cancelTestButton.disabled = true;
+      evidence.method = testMode ? `${meta.label} · 취소 테스트` : meta.label;
       evidence.webauthn = meta.webauthn;
-      evidence.request = 'POST /api/passkey/register/options';
+      evidence.request = testMode
+        ? 'POST /api/passkey/register/options · TEST'
+        : 'POST /api/passkey/register/options';
       evidence.challenge = '-';
       evidence.verify = '-';
       evidence.save = '-';
@@ -1502,7 +1565,8 @@
           },
           body: JSON.stringify({
             name,
-            authenticatorType: authType
+            authenticatorType: authType,
+            testMode
           })
         });
 
@@ -1516,11 +1580,25 @@
         evidence.challenge = challengePreview(optionData.optionsJSON.challenge);
         renderEvidence();
 
-        authStatus.textContent = meta.waiting;
+        authStatus.textContent = testMode
+          ? '테스트입니다. 패스키 등록 화면이 뜨면 등록하지 말고 취소해 주세요.'
+          : meta.waiting;
 
         const credential = await SimpleWebAuthnBrowser.startRegistration({
           optionsJSON: optionData.optionsJSON
         });
+
+        if (testMode) {
+          await cancelRegistration(registrationId);
+          evidence.verify = 'TEST COMPLETED · 취소 대신 등록 절차를 끝냄';
+          evidence.save = '없음 · 테스트 모드라 서버 저장 안 함';
+          renderEvidence();
+          authStatus.textContent =
+            '테스트에서 등록 절차를 끝까지 진행했습니다. 서버에는 저장하지 않았습니다. 다시 테스트해 등록 창에서 취소해 주세요.';
+          setRegistrationControlsDisabled(true);
+          cancelTestButton.disabled = false;
+          return;
+        }
 
         authStatus.textContent = '서버에서 등록 응답과 공개키를 검증하는 중...';
 
@@ -1557,8 +1635,9 @@
         await cancelRegistration(registrationId);
 
         if (isCancel) {
-          authStatus.textContent =
-            '패스키 등록을 취소했습니다. 서버에 패스키가 저장되지 않았습니다.';
+          authStatus.textContent = testMode
+            ? '취소 테스트 성공 · 서버에 새 패스키가 저장되지 않았습니다.'
+            : '패스키 등록을 취소했습니다. 서버에 패스키가 저장되지 않았습니다.';
           evidence.verify = 'CANCELLED';
           evidence.save = '없음';
         } else {
@@ -1572,6 +1651,9 @@
         if (!hasRegisteredPasskey) {
           setRegistrationControlsDisabled(false);
           await inspectCurrentDevice();
+        } else {
+          setRegistrationControlsDisabled(true);
+          cancelTestButton.disabled = false;
         }
       }
     }
@@ -1579,6 +1661,7 @@
     registerLocalButton.addEventListener('click', () => registerPasskey('localDevice'));
     registerRemoteButton.addEventListener('click', () => registerPasskey('remoteDevice'));
     registerSecurityKeyButton.addEventListener('click', () => registerPasskey('securityKey'));
+    cancelTestButton.addEventListener('click', () => registerPasskey('localDevice', true));
     copyUrlButton.addEventListener('click', copyCurrentUrl);
 
     pageUrl.textContent = location.href.split('#')[0];
