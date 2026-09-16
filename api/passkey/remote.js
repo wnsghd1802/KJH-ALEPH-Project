@@ -42,9 +42,11 @@ async function requestAction(req, res) {
   if (passkeyError) throw passkeyError;
   if (!passkeys?.length) return jsonError(res, 404, 'NO_PASSKEY', '등록된 패스키가 없습니다.');
 
+  // 휴대폰 승인 페이지에서는 특정 credential_id를 강제로 제한하지 않습니다.
+  // 등록 시 residentKey: 'required'로 만든 discoverable passkey를
+  // Android/Google 비밀번호 관리자가 직접 찾아 선택하도록 합니다.
   const optionsJSON = await generateAuthenticationOptions({
     rpID,
-    allowCredentials: passkeys.map((item) => ({ id: item.credential_id })),
     userVerification: 'required',
     timeout: REMOTE_LOGIN_TTL_MS,
   });
