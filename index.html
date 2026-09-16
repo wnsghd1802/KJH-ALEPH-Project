@@ -1296,7 +1296,8 @@
             </div>
 
             <div class="card3-actions">
-              <button class="card3-action primary" id="passkey-login" type="button">패스키로 로그인</button>
+              <button class="card3-action primary" id="passkey-login" type="button">이 기기에서 패스키 로그인</button>
+              <button class="card3-action" id="phone-passkey-login" type="button">휴대폰으로 로그인 (PC · QR)</button>
               <button class="card3-action" id="challenge-twice-test" type="button">Challenge 2회 발급 테스트</button>
               <button class="card3-action" id="bad-signature-test" type="button">잘못된 서명 테스트</button>
               <button class="card3-action" id="replay-test" type="button" disabled>같은 질문 재사용 테스트</button>
@@ -1467,6 +1468,7 @@
 
     // Task 8 / Card 3 - Passkey authentication
     const loginButton = document.getElementById('passkey-login');
+    const phoneLoginButton = document.getElementById('phone-passkey-login');
     const challengeTwiceButton = document.getElementById('challenge-twice-test');
     const badSignatureButton = document.getElementById('bad-signature-test');
     const replayTestButton = document.getElementById('replay-test');
@@ -1513,13 +1515,13 @@
     }
 
     function setCard3Busy(busy) {
-      [loginButton, challengeTwiceButton, badSignatureButton, privateTestButton, logoutButton].forEach((button) => {
+      [loginButton, phoneLoginButton, challengeTwiceButton, badSignatureButton, privateTestButton, logoutButton].forEach((button) => {
         if (button) button.disabled = busy;
       });
       if (replayTestButton) replayTestButton.disabled = busy || !lastSuccessfulLoginRequest;
     }
 
-    async function requestLoginOptions() {
+    async function requestLoginOptions(authMode = 'local') {
       const response = await fetch('/api/passkey/login/options', {
         method: 'POST',
         headers: {
@@ -1527,7 +1529,7 @@
           'Accept': 'application/json'
         },
         credentials: 'same-origin',
-        body: JSON.stringify({})
+        body: JSON.stringify({ authMode })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || `로그인 질문 요청 실패 (${response.status})`);
@@ -1559,7 +1561,7 @@
       return { response, data };
     }
 
-    async function performLogin({ badSignature = false } = {}) {
+    async function performLogin({ badSignature = false, authMode = 'local' } = {}) {
       if (!window.PublicKeyCredential || !window.SimpleWebAuthnBrowser) {
         loginStatus.textContent = '이 브라우저에서는 패스키 로그인을 사용할 수 없습니다.';
         return;
@@ -1572,12 +1574,16 @@
       loginStatus.textContent = '서버에서 로그인용 challenge를 만드는 중...';
 
       try {
-        const optionData = await requestLoginOptions();
+        const optionData = await requestLoginOptions(authMode);
         loginEvidence.request = `200 OK · loginId ${optionData.loginId}`;
         loginEvidence.challenge1 = optionData.optionsJSON.challenge;
         renderLoginEvidence();
 
-        loginStatus.textContent = '브라우저 안내에서 사용할 패스키를 선택해 주세요. PC에서는 휴대폰/태블릿 사용을 선택할 수 있습니다.';
+        if (authMode === 'phone') {
+          loginStatus.textContent = 'PC 브라우저에서 휴대폰/태블릿 사용 또는 QR 코드가 표시되면 선택하세요. PC와 휴대폰의 Bluetooth를 켜 두세요.';
+        } else {
+          loginStatus.textContent = '현재 기기의 패스키를 선택해 주세요. 다른 기기를 쓰려면 “휴대폰으로 로그인 (PC · QR)”을 사용하세요.';
+        }
         const credential = await SimpleWebAuthnBrowser.startAuthentication({
           optionsJSON: optionData.optionsJSON
         });
@@ -1750,7 +1756,8 @@
       }
     }
 
-    loginButton.addEventListener('click', () => performLogin());
+    loginButton.addEventListener('click', () => performLogin({ authMode: 'local' }));
+    phoneLoginButton.addEventListener('click', () => performLogin({ authMode: 'phone' }));
     challengeTwiceButton.addEventListener('click', challengeTwiceTest);
     badSignatureButton.addEventListener('click', () => performLogin({ badSignature: true }));
     replayTestButton.addEventListener('click', replayLastLogin);
