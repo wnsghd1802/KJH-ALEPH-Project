@@ -40,14 +40,11 @@ export default async function handler(req, res) {
     // 로그인에서는 등록 당시의 transports를 강제로 다시 넣지 않습니다.
     // Android에서 만든 패스키가 DB에 `internal` 위주로 저장되면 Windows Chrome이
     // 휴대폰을 이용한 hybrid(CDA/QR) 경로를 숨길 수 있기 때문입니다.
-    const optionsJSON = await generateAuthenticationOptions({
-      rpID,
-      allowCredentials: passkeys.map((item) => ({
-        id: item.credential_id,
-      })),
-      userVerification: 'required',
-      timeout: 60_000,
-    });
+  const optionsJSON = await generateAuthenticationOptions({ 
+    rpID, 
+    userVerification: 'required', 
+    timeout: 60_000, 
+  });
 
     // WebAuthn Level 3 hints. 지원 브라우저에서는 로그인 UI의 우선 경로를 제안합니다.
     // phone: Windows PC에서 휴대폰/태블릿 QR(cross-device / hybrid) 흐름을 우선 표시
