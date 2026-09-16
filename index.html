@@ -1289,7 +1289,8 @@
                 <p>
                   로그인할 때마다 서버가 새 challenge를 만들고, 패스키가 개인키로 서명합니다.
                   서버는 Card 2에서 저장한 공개키로 서명이 맞는지 확인한 뒤에만 세션을 발급합니다.
-                  PC에서는 브라우저가 지원하면 휴대폰/태블릿을 이용한 QR 방식도 선택할 수 있습니다.
+                  PC에서는 “휴대폰에 로그인 요청 보내기”를 누르면 연결된 휴대폰에 알림이 뜨고,
+                  휴대폰에서 패스키 본인 인증을 승인하면 PC 세션이 자동으로 열립니다.
                 </p>
               </div>
               <span class="card3-state" id="login-state">SIGNED OUT</span>
@@ -1297,7 +1298,8 @@
 
             <div class="card3-actions">
               <button class="card3-action primary" id="passkey-login" type="button">이 기기에서 패스키 로그인</button>
-              <button class="card3-action" id="phone-passkey-login" type="button">휴대폰으로 로그인 (PC · QR)</button>
+              <button class="card3-action" id="remote-passkey-login" type="button">휴대폰에 로그인 요청 보내기 (PASS 방식)</button>
+              <button class="card3-action" id="link-phone-push" type="button">이 휴대폰을 로그인 알림 기기로 연결</button>
               <button class="card3-action" id="challenge-twice-test" type="button">Challenge 2회 발급 테스트</button>
               <button class="card3-action" id="bad-signature-test" type="button">잘못된 서명 테스트</button>
               <button class="card3-action" id="replay-test" type="button" disabled>같은 질문 재사용 테스트</button>
@@ -1468,7 +1470,8 @@
 
     // Task 8 / Card 3 - Passkey authentication
     const loginButton = document.getElementById('passkey-login');
-    const phoneLoginButton = document.getElementById('phone-passkey-login');
+    const remoteLoginButton = document.getElementById('remote-passkey-login');
+    const linkPhoneButton = document.getElementById('link-phone-push');
     const challengeTwiceButton = document.getElementById('challenge-twice-test');
     const badSignatureButton = document.getElementById('bad-signature-test');
     const replayTestButton = document.getElementById('replay-test');
@@ -1515,7 +1518,7 @@
     }
 
     function setCard3Busy(busy) {
-      [loginButton, phoneLoginButton, challengeTwiceButton, badSignatureButton, privateTestButton, logoutButton].forEach((button) => {
+      [loginButton, remoteLoginButton, linkPhoneButton, challengeTwiceButton, badSignatureButton, privateTestButton, logoutButton].forEach((button) => {
         if (button) button.disabled = busy;
       });
       if (replayTestButton) replayTestButton.disabled = busy || !lastSuccessfulLoginRequest;
@@ -1579,11 +1582,7 @@
         loginEvidence.challenge1 = optionData.optionsJSON.challenge;
         renderLoginEvidence();
 
-        if (authMode === 'phone') {
-          loginStatus.textContent = 'PC 브라우저에서 휴대폰/태블릿 사용 또는 QR 코드가 표시되면 선택하세요. PC와 휴대폰의 Bluetooth를 켜 두세요.';
-        } else {
-          loginStatus.textContent = '현재 기기의 패스키를 선택해 주세요. 다른 기기를 쓰려면 “휴대폰으로 로그인 (PC · QR)”을 사용하세요.';
-        }
+        loginStatus.textContent = '현재 기기의 패스키를 선택해 주세요.';
         const credential = await SimpleWebAuthnBrowser.startAuthentication({
           optionsJSON: optionData.optionsJSON
         });
@@ -1637,6 +1636,147 @@
         } else {
           loginStatus.textContent = error.message || '패스키 로그인 중 오류가 발생했습니다.';
         }
+      } finally {
+        setCard3Busy(false);
+      }
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+      const rawData = atob(base64);
+      return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+    }
+
+    async function linkThisPhoneForLoginPush() {
+      setCard3Busy(true);
+      try {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+          throw new Error('이 브라우저는 로그인 알림 연결을 지원하지 않습니다. Android Chrome에서 실행해 주세요.');
+        }
+
+        loginStatus.textContent = '휴대폰 로그인 알림 권한을 확인하는 중...';
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          throw new Error('알림 권한이 허용되지 않았습니다. 브라우저 사이트 설정에서 알림을 허용해 주세요.');
+        }
+
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready;
+
+        const keyResponse = await fetch('/api/push/public-key', {
+          credentials: 'same-origin', cache: 'no-store', headers: { 'Accept': 'application/json' }
+        });
+        const keyData = await keyResponse.json();
+        if (!keyResponse.ok) throw new Error(keyData.message || '푸시 공개키를 불러오지 못했습니다.');
+
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(keyData.publicKey)
+          });
+        }
+
+        const response = await fetch('/api/push/register', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ subscription: subscription.toJSON() })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('먼저 이 휴대폰에서 “이 기기에서 패스키 로그인”을 성공한 뒤 다시 알림 연결을 눌러 주세요.');
+          }
+          throw new Error(data.message || '휴대폰 알림 연결에 실패했습니다.');
+        }
+
+        loginStatus.textContent = '이 휴대폰 연결 완료 · 이제 PC에서 로그인 요청을 보내면 휴대폰 알림이 뜹니다.';
+        addCard3Log('휴대폰 알림 연결', 'Web Push 구독 저장 완료 · PASS 방식 로그인 준비됨', 'good');
+      } catch (error) {
+        loginStatus.textContent = error.message || '휴대폰 알림 연결 중 오류가 발생했습니다.';
+      } finally {
+        setCard3Busy(false);
+      }
+    }
+
+    async function remoteApi(path, body) {
+      const response = await fetch(path, {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      return { response, data };
+    }
+
+    function sleep(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function requestPassStyleLogin() {
+      setCard3Busy(true);
+      loginEvidence.request = 'POST /api/passkey/remote/request';
+      loginEvidence.verify = '휴대폰 승인 대기 중';
+      renderLoginEvidence();
+      loginStatus.textContent = '연결된 휴대폰으로 로그인 승인 알림을 보내는 중...';
+
+      try {
+        const { response, data } = await remoteApi('/api/passkey/remote/request', {});
+        if (!response.ok) throw new Error(data.message || `휴대폰 로그인 요청 실패 (${response.status})`);
+
+        loginEvidence.request = `200 OK · requestId ${data.requestId}`;
+        loginEvidence.challenge1 = data.challenge || '-';
+        loginEvidence.verify = 'PUSH SENT · 휴대폰 패스키 승인 대기 중';
+        loginStatus.textContent = '휴대폰에 로그인 요청 알림을 보냈습니다. 알림을 눌러 패스키 본인 인증 후 승인해 주세요.';
+        addCard3Log('PASS 방식 요청', `휴대폰 알림 ${data.delivered || 1}대 전송 · 승인 대기`, 'good');
+        renderLoginEvidence();
+
+        const deadline = Date.parse(data.expiresAt) || (Date.now() + 120000);
+        while (Date.now() < deadline) {
+          await sleep(1500);
+          const statusResult = await remoteApi('/api/passkey/remote/status', {
+            requestId: data.requestId,
+            browserSecret: data.browserSecret
+          });
+          if (!statusResult.response.ok) throw new Error(statusResult.data.message || '휴대폰 승인 상태를 확인하지 못했습니다.');
+
+          const status = statusResult.data.status;
+          if (status === 'pending') continue;
+          if (status === 'approved') {
+            loginStatus.textContent = '휴대폰 본인 인증 성공 · PC 세션을 발급하는 중...';
+            const completeResult = await remoteApi('/api/passkey/remote/complete', {
+              requestId: data.requestId,
+              browserSecret: data.browserSecret
+            });
+            if (!completeResult.response.ok) throw new Error(completeResult.data.message || 'PC 로그인 완료 처리에 실패했습니다.');
+
+            loginEvidence.verify = 'VERIFIED · 휴대폰에서 저장된 공개키 검증 성공';
+            loginEvidence.session = `${completeResult.data.session?.type || 'HttpOnly cookie'} · ${completeResult.data.session?.display || 'task8_session=••••••••'}`;
+            loginState.textContent = 'SIGNED IN';
+            loginStatus.textContent = '휴대폰 승인 완료 · PC 로그인이 자동으로 완료되었습니다.';
+            addCard3Log('휴대폰 승인 로그인', '200 VERIFIED · PC HttpOnly 세션 발급', 'good');
+            renderLoginEvidence();
+            await checkPrivateAccess(false);
+            return;
+          }
+          if (status === 'rejected') throw new Error('휴대폰에서 로그인 요청을 거절했습니다.');
+          if (status === 'expired') throw new Error('휴대폰 승인 시간이 만료되었습니다. 다시 요청해 주세요.');
+          if (status === 'completed') {
+            await checkPrivateAccess(false);
+            return;
+          }
+          throw new Error(`예상하지 못한 승인 상태입니다. (${status})`);
+        }
+        throw new Error('휴대폰 승인 시간이 만료되었습니다. 다시 요청해 주세요.');
+      } catch (error) {
+        loginEvidence.verify = 'REMOTE LOGIN FAILED';
+        loginStatus.textContent = error.message || '휴대폰 승인 로그인 중 오류가 발생했습니다.';
+        addCard3Log('PASS 방식 로그인', loginStatus.textContent, 'bad');
+        renderLoginEvidence();
       } finally {
         setCard3Busy(false);
       }
@@ -1757,7 +1897,8 @@
     }
 
     loginButton.addEventListener('click', () => performLogin({ authMode: 'local' }));
-    phoneLoginButton.addEventListener('click', () => performLogin({ authMode: 'phone' }));
+    remoteLoginButton.addEventListener('click', requestPassStyleLogin);
+    linkPhoneButton.addEventListener('click', linkThisPhoneForLoginPush);
     challengeTwiceButton.addEventListener('click', challengeTwiceTest);
     badSignatureButton.addEventListener('click', () => performLogin({ badSignature: true }));
     replayTestButton.addEventListener('click', replayLastLogin);
