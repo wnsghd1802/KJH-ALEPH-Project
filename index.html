@@ -354,6 +354,134 @@
       font-size: .82rem;
     }
 
+
+    /* Task 8 / Card 1: Private area shell */
+    .private-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .72fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .private-panel,
+    .private-info {
+      border: 1px solid rgba(94,234,212,.22);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(18,26,45,.88), rgba(11,16,32,.86));
+      padding: 28px;
+    }
+
+    .private-panel {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .private-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 85% 15%, rgba(94,234,212,.10), transparent 32%);
+      pointer-events: none;
+    }
+
+    .lock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid rgba(94,234,212,.28);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(94,234,212,.06);
+      font-size: .78rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .private-panel h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .private-panel p,
+    .private-info p {
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    .locked-items {
+      display: grid;
+      gap: 10px;
+      margin: 22px 0;
+    }
+
+    .locked-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+      color: #cbd5e1;
+      font-size: .9rem;
+    }
+
+    .locked-item span:last-child {
+      color: #64748b;
+      font: 700 .78rem ui-monospace, monospace;
+    }
+
+    .passkey-button {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      background: linear-gradient(100deg, var(--accent), var(--accent-2));
+      color: #06111d;
+      font: 800 .92rem inherit;
+      cursor: pointer;
+    }
+
+    .passkey-button:hover {
+      filter: brightness(1.04);
+    }
+
+    .auth-status {
+      margin-top: 12px;
+      min-height: 24px;
+      color: #fca5a5;
+      font: 700 .8rem ui-monospace, monospace;
+    }
+
+    .private-info h3 {
+      font-size: 1.05rem;
+      margin-bottom: 14px;
+    }
+
+    .private-info ul {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .private-info li {
+      color: var(--muted);
+      font-size: .9rem;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .private-info li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 900;
+    }
+
     .closing {
       text-align: center;
       padding: 120px 0;
@@ -441,7 +569,7 @@
     }
 
     @media (max-width: 800px) {
-      .hero-grid, .cards, .story-list, .cert-list {
+      .hero-grid, .cards, .story-list, .cert-list, .private-wrap {
         grid-template-columns: 1fr;
       }
 
@@ -469,6 +597,7 @@
         <a href="#certificates">Certificates</a>
         <a href="#experience">Experience</a>
         <a href="#skills">Skills</a>
+        <a href="#private">Private</a>
       </div>
     </div>
   </nav>
@@ -658,9 +787,63 @@
       </div>
     </section>
 
+
+    <section id="private">
+      <div class="container">
+        <div class="section-label">06 / Private</div>
+        <h2>나만 보기</h2>
+
+        <div class="private-wrap">
+          <div class="private-panel" aria-labelledby="private-title">
+            <div class="lock-badge">🔒 PASSKEY REQUIRED</div>
+            <h3 id="private-title">비공개 영역이 잠겨 있습니다.</h3>
+            <p>
+              실제 비공개 내용은 이 HTML에 들어 있지 않습니다.
+              패스키 인증에 성공한 뒤 서버에서 받아오도록 구성할 예정입니다.
+            </p>
+
+            <div class="locked-items" aria-label="잠긴 비공개 항목">
+              <div class="locked-item">
+                <span>비공개 항목 1</span>
+                <span>LOCKED</span>
+              </div>
+              <div class="locked-item">
+                <span>비공개 항목 2</span>
+                <span>LOCKED</span>
+              </div>
+              <div class="locked-item">
+                <span>비공개 항목 3</span>
+                <span>LOCKED</span>
+              </div>
+            </div>
+
+            <button class="passkey-button" id="passkey-login" type="button">
+              패스키로 잠금 해제
+            </button>
+            <div class="auth-status" id="auth-status" role="status" aria-live="polite">
+              인증 상태 확인 중...
+            </div>
+          </div>
+
+          <aside class="private-info">
+            <h3>Card 1 보안 구조</h3>
+            <p>
+              로그인하지 않은 브라우저에는 비공개 데이터 자체를 보내지 않습니다.
+            </p>
+            <ul>
+              <li>공개 영역과 비공개 영역을 화면에서 구분</li>
+              <li>비공개 내용은 HTML / JavaScript에 포함하지 않음</li>
+              <li>비인증 상태의 /api/private 요청은 401로 거절</li>
+              <li>패스키 등록·로그인은 다음 카드에서 연결</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
     <section class="closing">
       <div class="container">
-        <div class="section-label">06 / Direction</div>
+        <div class="section-label">07 / Direction</div>
         <h2>Network × Security</h2>
         <p>
           네트워크의 구조를 이해하고, 보안 관점에서 문제를 바라보며,
@@ -681,6 +864,39 @@
         button.setAttribute('aria-expanded', String(!expanded));
       });
     });
+
+    const authStatus = document.getElementById('auth-status');
+    const passkeyLogin = document.getElementById('passkey-login');
+
+    async function checkPrivateAccess() {
+      try {
+        const response = await fetch('/api/private', {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          authStatus.textContent = `인증되지 않음 · ${response.status}`;
+          return;
+        }
+
+        if (response.ok) {
+          authStatus.textContent = '인증됨 · 비공개 데이터를 불러올 수 있습니다.';
+          return;
+        }
+
+        authStatus.textContent = `확인 실패 · HTTP ${response.status}`;
+      } catch (error) {
+        authStatus.textContent = 'API 연결 전 · 배포 후 /api/private에서 확인';
+      }
+    }
+
+    passkeyLogin.addEventListener('click', () => {
+      alert('Card 2에서 패스키 등록 기능을 연결한 뒤, Card 3에서 로그인 기능을 완성합니다.');
+    });
+
+    checkPrivateAccess();
   </script>
 </body>
 </html>
