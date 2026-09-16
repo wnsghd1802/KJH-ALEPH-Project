@@ -863,6 +863,107 @@
       font-size: .78rem;
     }
 
+
+
+    /* Task 8 / Card 3: Passkey authentication */
+    .card3-login { margin: 0 0 28px; }
+    .card3-login .private-panel { padding: 30px; }
+    .card3-lead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+    .card3-lead p { margin: 0; }
+    .card3-state {
+      padding: 7px 10px;
+      border: 1px solid rgba(96,165,250,.26);
+      border-radius: 999px;
+      background: rgba(96,165,250,.07);
+      color: #bfdbfe;
+      font: 800 .72rem ui-monospace, monospace;
+      white-space: nowrap;
+    }
+    .card3-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .card3-action {
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      background: rgba(255,255,255,.035);
+      color: #dbe7f5;
+      font: 800 .82rem inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+    .card3-action:hover { border-color: rgba(94,234,212,.38); }
+    .card3-action.primary {
+      grid-column: 1 / -1;
+      text-align: center;
+      border: 0;
+      background: linear-gradient(100deg, var(--accent), var(--accent-2));
+      color: #06111d;
+      font-size: .94rem;
+    }
+    .card3-action:disabled { opacity: .5; cursor: not-allowed; }
+    .login-evidence {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(0,0,0,.16);
+      color: #94a3b8;
+      font: 700 .76rem/1.6 ui-monospace, monospace;
+      overflow-wrap: anywhere;
+    }
+    .login-evidence strong { color: var(--accent); }
+    .card3-test-log {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .card3-log-row {
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(255,255,255,.025);
+      color: #94a3b8;
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+    .card3-log-row b { color: #dbe7f5; }
+    .card3-log-row.good { border-color: rgba(94,234,212,.28); }
+    .card3-log-row.bad { border-color: rgba(248,113,113,.25); }
+    .private-data-box {
+      display: grid;
+      gap: 9px;
+      margin-top: 16px;
+    }
+    .private-data-item {
+      padding: 12px 13px;
+      border: 1px solid rgba(94,234,212,.18);
+      border-radius: 11px;
+      background: rgba(94,234,212,.04);
+    }
+    .private-data-item strong { display: block; color: #dbe7f5; font-size: .84rem; }
+    .private-data-item span { color: #94a3b8; font-size: .8rem; }
+    .card2-divider {
+      margin: 34px 0 18px;
+      color: #94a3b8;
+      font: 800 .78rem ui-monospace, monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
     .closing {
       text-align: center;
       padding: 120px 0;
@@ -950,9 +1051,13 @@
     }
 
     @media (max-width: 800px) {
-      .hero-grid, .cards, .story-list, .cert-list, .private-wrap, .auth-methods {
+      .hero-grid, .cards, .story-list, .cert-list, .private-wrap, .auth-methods, .card3-actions {
         grid-template-columns: 1fr;
       }
+
+      .card3-lead { grid-template-columns: 1fr; }
+      .card3-action.primary { grid-column: auto; }
+      .card3-test-log { grid-template-columns: 1fr; }
 
       .hero {
         min-height: auto;
@@ -1172,8 +1277,53 @@
 
     <section id="private">
       <div class="container">
-        <div class="section-label">06 / Private · Card 2</div>
+        <div class="section-label">06 / Private · Card 3</div>
         <h2>나만 보기</h2>
+
+        <div class="card3-login">
+          <div class="private-panel" aria-labelledby="login-title">
+            <div class="lock-badge">🔑 PASSKEY LOGIN · CARD 3</div>
+            <div class="card3-lead">
+              <div>
+                <h3 id="login-title">패스키로 로그인해 비공개 자료를 엽니다.</h3>
+                <p>
+                  로그인할 때마다 서버가 새 challenge를 만들고, 패스키가 개인키로 서명합니다.
+                  서버는 Card 2에서 저장한 공개키로 서명이 맞는지 확인한 뒤에만 세션을 발급합니다.
+                  PC에서는 브라우저가 지원하면 휴대폰/태블릿을 이용한 QR 방식도 선택할 수 있습니다.
+                </p>
+              </div>
+              <span class="card3-state" id="login-state">SIGNED OUT</span>
+            </div>
+
+            <div class="card3-actions">
+              <button class="card3-action primary" id="passkey-login" type="button">패스키로 로그인</button>
+              <button class="card3-action" id="challenge-twice-test" type="button">Challenge 2회 발급 테스트</button>
+              <button class="card3-action" id="bad-signature-test" type="button">잘못된 서명 테스트</button>
+              <button class="card3-action" id="replay-test" type="button" disabled>같은 질문 재사용 테스트</button>
+              <button class="card3-action" id="private-test" type="button">비공개 요청 확인</button>
+              <button class="card3-action" id="logout-button" type="button">로그아웃</button>
+            </div>
+
+            <div class="auth-status" id="login-status" role="status" aria-live="polite">로그인 상태를 확인 중...</div>
+
+            <div class="login-evidence" id="login-evidence" aria-live="polite">
+              <div><strong>REQUEST</strong> -</div>
+              <div><strong>CHALLENGE #1</strong> -</div>
+              <div><strong>CHALLENGE #2</strong> -</div>
+              <div><strong>SIGNATURE VERIFY</strong> -</div>
+              <div><strong>SESSION</strong> -</div>
+              <div><strong>PRIVATE</strong> -</div>
+            </div>
+
+            <div class="card3-test-log" id="card3-test-log">
+              <div class="card3-log-row"><b>검증 기록</b> 아직 Card 3 테스트를 실행하지 않았습니다.</div>
+            </div>
+
+            <div class="private-data-box" id="private-data-box"></div>
+          </div>
+        </div>
+
+        <div class="card2-divider">Card 2 · 패스키 등록 / 확인 도구</div>
 
         <div class="private-wrap">
           <div class="private-panel" aria-labelledby="private-title">
@@ -1314,7 +1464,301 @@
       });
     });
 
-    const authStatus = document.getElementById('auth-status');
+
+    // Task 8 / Card 3 - Passkey authentication
+    const loginButton = document.getElementById('passkey-login');
+    const challengeTwiceButton = document.getElementById('challenge-twice-test');
+    const badSignatureButton = document.getElementById('bad-signature-test');
+    const replayTestButton = document.getElementById('replay-test');
+    const privateTestButton = document.getElementById('private-test');
+    const logoutButton = document.getElementById('logout-button');
+    const loginStatus = document.getElementById('login-status');
+    const loginState = document.getElementById('login-state');
+    const loginEvidenceBox = document.getElementById('login-evidence');
+    const card3TestLog = document.getElementById('card3-test-log');
+    const privateDataBox = document.getElementById('private-data-box');
+
+    let lastSuccessfulLoginRequest = null;
+    let card3LogInitialized = false;
+
+    const loginEvidence = {
+      request: '-',
+      challenge1: '-',
+      challenge2: '-',
+      verify: '-',
+      session: '-',
+      private: '-'
+    };
+
+    function renderLoginEvidence() {
+      loginEvidenceBox.innerHTML = `
+        <div><strong>REQUEST</strong> ${escapeHTML(loginEvidence.request)}</div>
+        <div><strong>CHALLENGE #1</strong> ${escapeHTML(loginEvidence.challenge1)}</div>
+        <div><strong>CHALLENGE #2</strong> ${escapeHTML(loginEvidence.challenge2)}</div>
+        <div><strong>SIGNATURE VERIFY</strong> ${escapeHTML(loginEvidence.verify)}</div>
+        <div><strong>SESSION</strong> ${escapeHTML(loginEvidence.session)}</div>
+        <div><strong>PRIVATE</strong> ${escapeHTML(loginEvidence.private)}</div>
+      `;
+    }
+
+    function addCard3Log(title, detail, kind = '') {
+      if (!card3LogInitialized) {
+        card3TestLog.innerHTML = '';
+        card3LogInitialized = true;
+      }
+      const row = document.createElement('div');
+      row.className = `card3-log-row ${kind}`.trim();
+      row.innerHTML = `<b>${escapeHTML(title)}</b> ${escapeHTML(detail)}`;
+      card3TestLog.prepend(row);
+    }
+
+    function setCard3Busy(busy) {
+      [loginButton, challengeTwiceButton, badSignatureButton, privateTestButton, logoutButton].forEach((button) => {
+        if (button) button.disabled = busy;
+      });
+      if (replayTestButton) replayTestButton.disabled = busy || !lastSuccessfulLoginRequest;
+    }
+
+    async function requestLoginOptions() {
+      const response = await fetch('/api/passkey/login/options', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({})
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || `로그인 질문 요청 실패 (${response.status})`);
+      return data;
+    }
+
+    function tamperSignature(credential) {
+      const clone = JSON.parse(JSON.stringify(credential));
+      const signature = clone?.response?.signature;
+      if (!signature || typeof signature !== 'string') {
+        throw new Error('테스트용 서명 값을 찾을 수 없습니다.');
+      }
+      const replacement = signature[0] === 'A' ? 'B' : 'A';
+      clone.response.signature = replacement + signature.slice(1);
+      return clone;
+    }
+
+    async function postLoginVerification(loginId, credential) {
+      const response = await fetch('/api/passkey/login/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ loginId, credential })
+      });
+      const data = await response.json();
+      return { response, data };
+    }
+
+    async function performLogin({ badSignature = false } = {}) {
+      if (!window.PublicKeyCredential || !window.SimpleWebAuthnBrowser) {
+        loginStatus.textContent = '이 브라우저에서는 패스키 로그인을 사용할 수 없습니다.';
+        return;
+      }
+
+      setCard3Busy(true);
+      loginEvidence.request = 'POST /api/passkey/login/options';
+      loginEvidence.verify = badSignature ? '잘못된 서명 테스트 준비 중' : '서명 대기 중';
+      renderLoginEvidence();
+      loginStatus.textContent = '서버에서 로그인용 challenge를 만드는 중...';
+
+      try {
+        const optionData = await requestLoginOptions();
+        loginEvidence.request = `200 OK · loginId ${optionData.loginId}`;
+        loginEvidence.challenge1 = optionData.optionsJSON.challenge;
+        renderLoginEvidence();
+
+        loginStatus.textContent = '브라우저 안내에서 사용할 패스키를 선택해 주세요. PC에서는 휴대폰/태블릿 사용을 선택할 수 있습니다.';
+        const credential = await SimpleWebAuthnBrowser.startAuthentication({
+          optionsJSON: optionData.optionsJSON
+        });
+
+        const credentialToSend = badSignature ? tamperSignature(credential) : credential;
+        loginStatus.textContent = badSignature
+          ? '서명을 일부러 변경해 서버의 공개키 검증 거절을 확인하는 중...'
+          : '서버가 저장된 공개키로 서명을 확인하는 중...';
+
+        const { response, data } = await postLoginVerification(optionData.loginId, credentialToSend);
+
+        if (badSignature) {
+          if (response.ok) {
+            loginEvidence.verify = 'ERROR · 변경된 서명이 통과함';
+            addCard3Log('실패 테스트 이상', '변경된 서명이 서버에서 통과했습니다.', 'bad');
+          } else {
+            loginEvidence.verify = `${response.status} ${data.error || 'REJECTED'} · 잘못된 서명 거절`;
+            addCard3Log('서명 실패 요청', `${response.status} ${data.error || 'REJECTED'} · ${data.message || ''}`, 'bad');
+          }
+          loginStatus.textContent = response.ok
+            ? '주의: 잘못된 서명이 통과했습니다. 서버 검증 코드를 확인해야 합니다.'
+            : '잘못된 서명이 공개키 검증에서 정상적으로 거절되었습니다.';
+          renderLoginEvidence();
+          return;
+        }
+
+        if (!response.ok || !data.verified) {
+          loginEvidence.verify = `${response.status} ${data.error || 'FAILED'}`;
+          addCard3Log('로그인 실패', `${response.status} ${data.error || 'FAILED'} · ${data.message || ''}`, 'bad');
+          throw new Error(data.message || `패스키 로그인 실패 (${response.status})`);
+        }
+
+        lastSuccessfulLoginRequest = {
+          loginId: optionData.loginId,
+          credential
+        };
+        replayTestButton.disabled = false;
+
+        loginEvidence.verify = 'VERIFIED · 저장된 공개키로 서명 확인 성공';
+        loginEvidence.session = `${data.session?.type || 'HttpOnly cookie'} · ${data.session?.display || 'task8_session=••••••••'}`;
+        loginState.textContent = 'SIGNED IN';
+        loginStatus.textContent = '패스키 로그인 성공 · 비공개 자료 접근이 허용되었습니다.';
+        addCard3Log('서명 성공 요청', '200 VERIFIED · 공개키 검증 후 HttpOnly 세션 발급', 'good');
+        renderLoginEvidence();
+        await checkPrivateAccess(false);
+      } catch (error) {
+        const isCancel = error && (error.name === 'NotAllowedError' || error.name === 'AbortError');
+        if (isCancel) {
+          loginStatus.textContent = '패스키 로그인을 취소했습니다.';
+          addCard3Log('로그인 취소', '사용자가 WebAuthn 인증 창을 닫았습니다.');
+        } else {
+          loginStatus.textContent = error.message || '패스키 로그인 중 오류가 발생했습니다.';
+        }
+      } finally {
+        setCard3Busy(false);
+      }
+    }
+
+    async function challengeTwiceTest() {
+      setCard3Busy(true);
+      loginStatus.textContent = '로그인용 challenge를 연속으로 두 번 발급하는 중...';
+      try {
+        const first = await requestLoginOptions();
+        const second = await requestLoginOptions();
+        const a = first.optionsJSON.challenge;
+        const b = second.optionsJSON.challenge;
+        loginEvidence.request = 'POST /api/passkey/login/options × 2 · 둘 다 200 OK';
+        loginEvidence.challenge1 = a;
+        loginEvidence.challenge2 = b;
+        const different = a !== b;
+        addCard3Log(
+          'Challenge 2회 발급',
+          different ? '서로 다른 challenge가 발급되었습니다.' : '두 challenge가 같습니다. 확인이 필요합니다.',
+          different ? 'good' : 'bad'
+        );
+        loginStatus.textContent = different
+          ? 'C27/C28 확인: 두 로그인 요청의 challenge가 서로 다릅니다.'
+          : '두 challenge가 같게 나왔습니다. 서버 challenge 생성을 확인해 주세요.';
+        renderLoginEvidence();
+      } catch (error) {
+        loginStatus.textContent = error.message || 'Challenge 테스트에 실패했습니다.';
+      } finally {
+        setCard3Busy(false);
+      }
+    }
+
+    async function replayLastLogin() {
+      if (!lastSuccessfulLoginRequest) {
+        loginStatus.textContent = '먼저 정상 패스키 로그인을 한 번 성공시켜 주세요.';
+        return;
+      }
+      setCard3Busy(true);
+      loginStatus.textContent = '직전 성공 요청의 같은 loginId와 서명 응답을 다시 보내는 중...';
+      try {
+        const { response, data } = await postLoginVerification(
+          lastSuccessfulLoginRequest.loginId,
+          lastSuccessfulLoginRequest.credential
+        );
+        if (!response.ok && data.error === 'CHALLENGE_ALREADY_USED') {
+          addCard3Log('Challenge 재사용 요청', `${response.status} CHALLENGE_ALREADY_USED · 재사용 거절`, 'good');
+          loginStatus.textContent = 'C31 확인: 이미 사용한 challenge가 정상적으로 거절되었습니다.';
+        } else {
+          addCard3Log('Challenge 재사용 요청', `${response.status} ${data.error || '응답'} · 예상과 다른 결과`, 'bad');
+          loginStatus.textContent = '재사용 테스트 결과를 확인해 주세요.';
+        }
+      } catch (error) {
+        loginStatus.textContent = error.message || '재사용 테스트 중 오류가 발생했습니다.';
+      } finally {
+        setCard3Busy(false);
+      }
+    }
+
+    async function checkPrivateAccess(showStatus = true) {
+      try {
+        const response = await fetch('/api/private', {
+          headers: { 'Accept': 'application/json' },
+          credentials: 'same-origin',
+          cache: 'no-store'
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          loginEvidence.private = `${response.status} ${data.error || 'DENIED'} · 로그인 없이는 거절`;
+          privateDataBox.innerHTML = '';
+          loginState.textContent = 'SIGNED OUT';
+          if (showStatus) loginStatus.textContent = '비로그인 요청이 서버에서 거절되었습니다.';
+          addCard3Log('비공개 요청', `${response.status} ${data.error || 'DENIED'} · 서버 거절`, 'bad');
+          renderLoginEvidence();
+          return false;
+        }
+
+        loginEvidence.private = '200 OK · 유효한 세션 확인 후 공개';
+        loginEvidence.session = data.session || 'task8_session=••••••••';
+        loginState.textContent = 'SIGNED IN';
+        privateDataBox.innerHTML = (data.items || []).map((item) => `
+          <div class="private-data-item">
+            <strong>${escapeHTML(item.title)}</strong>
+            <span>${escapeHTML(item.value)}</span>
+          </div>
+        `).join('');
+        if (showStatus) loginStatus.textContent = '유효한 세션을 확인해 비공개 자료를 불러왔습니다.';
+        addCard3Log('비공개 요청', '200 OK · 세션 검증 후 공개', 'good');
+        renderLoginEvidence();
+        return true;
+      } catch (error) {
+        if (showStatus) loginStatus.textContent = error.message || '비공개 자료 확인에 실패했습니다.';
+        return false;
+      }
+    }
+
+    async function logoutCard3() {
+      setCard3Busy(true);
+      try {
+        await fetch('/api/session/logout', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        });
+        lastSuccessfulLoginRequest = null;
+        replayTestButton.disabled = true;
+        loginEvidence.session = '-';
+        privateDataBox.innerHTML = '';
+        loginState.textContent = 'SIGNED OUT';
+        loginStatus.textContent = '로그아웃했습니다. 세션 쿠키가 제거되었습니다.';
+        addCard3Log('로그아웃', '세션 폐기 및 쿠키 제거');
+        renderLoginEvidence();
+        await checkPrivateAccess(false);
+      } finally {
+        setCard3Busy(false);
+      }
+    }
+
+    loginButton.addEventListener('click', () => performLogin());
+    challengeTwiceButton.addEventListener('click', challengeTwiceTest);
+    badSignatureButton.addEventListener('click', () => performLogin({ badSignature: true }));
+    replayTestButton.addEventListener('click', replayLastLogin);
+    privateTestButton.addEventListener('click', () => checkPrivateAccess(true));
+    logoutButton.addEventListener('click', logoutCard3);
+
+
+        const authStatus = document.getElementById('auth-status');
     const passkeyName = document.getElementById('passkey-name');
     const passkeyList = document.getElementById('passkey-list');
     const evidenceBox = document.getElementById('registration-evidence');
@@ -1674,6 +2118,8 @@
     }
 
     renderEvidence();
+    renderLoginEvidence();
+    checkPrivateAccess(false);
     inspectCurrentDevice();
     loadPasskeys();
   </script>
