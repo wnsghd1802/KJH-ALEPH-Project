@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   try {
     const name = String(req.body?.name || '').trim();
-    const authenticatorType = String(req.body?.authenticatorType || 'remoteDevice');
+    const authenticatorType = String(req.body?.authenticatorType || 'localDevice');
     const allowedAuthenticatorTypes = new Set(['remoteDevice', 'securityKey', 'localDevice']);
     if (!name || name.length > 40) {
       return jsonError(res, 400, 'INVALID_NAME', '패스키 이름은 1~40자로 입력해 주세요.');
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
         userVerification: 'required',
       },
       // SimpleWebAuthn이 WebAuthn hints + 하위 호환용 authenticatorAttachment를 함께 구성합니다.
-      // remoteDevice: 휴대폰/태블릿(hybrid), securityKey: USB/FIDO2 키, localDevice: Windows Hello 등
+      // localDevice: 현재 기기(휴대폰 생체 인증/Windows Hello), remoteDevice: 다른 휴대폰(hybrid), securityKey: USB/FIDO2 키
       preferredAuthenticatorType: authenticatorType,
       supportedAlgorithmIDs: [-7, -257],
       timeout: 60_000,

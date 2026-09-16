@@ -485,6 +485,205 @@
 
     /* Task 8 / Card 2: Passkey registration */
 
+
+    /* Card 2 redesign: current-device / mobile-first passkey registration */
+    .device-registration {
+      display: grid;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .device-check {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .device-check-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .device-check strong {
+      display: block;
+      color: var(--text);
+      font-size: .96rem;
+      margin-bottom: 4px;
+    }
+
+    .device-check p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .device-state {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #cbd5e1;
+      background: rgba(255,255,255,.035);
+      font: 800 .72rem ui-monospace, monospace;
+    }
+
+    .device-state.good {
+      color: var(--accent);
+      border-color: rgba(94,234,212,.28);
+      background: rgba(94,234,212,.07);
+    }
+
+    .device-state.bad {
+      color: #fca5a5;
+      border-color: rgba(248,113,113,.25);
+      background: rgba(248,113,113,.06);
+    }
+
+    .shared-pc-warning {
+      padding: 14px 15px;
+      border: 1px solid rgba(250,204,21,.24);
+      border-radius: 13px;
+      background: rgba(250,204,21,.055);
+      color: #dbe7f5;
+      font-size: .84rem;
+      line-height: 1.6;
+    }
+
+    .shared-pc-warning strong {
+      color: #fde68a;
+    }
+
+    .page-address {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .page-address code {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #cbd5e1;
+      background: rgba(0,0,0,.14);
+      font-size: .78rem;
+    }
+
+    .copy-url-button {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font: 800 .78rem inherit;
+      cursor: pointer;
+    }
+
+    .register-primary {
+      padding: 18px;
+      border: 1px solid rgba(94,234,212,.28);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(94,234,212,.075), rgba(96,165,250,.055));
+    }
+
+    .register-primary-head {
+      margin-bottom: 14px;
+    }
+
+    .register-primary-head strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .register-primary-head span {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .passkey-button.primary-action {
+      margin-top: 10px;
+    }
+
+    .other-methods {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .method-action {
+      min-height: 118px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      color: var(--text);
+      padding: 15px;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .method-action:hover,
+    .method-action:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(94,234,212,.34);
+      background: rgba(255,255,255,.04);
+    }
+
+    .method-action strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: .9rem;
+    }
+
+    .method-action span {
+      display: block;
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1.5;
+    }
+
+    .method-action small {
+      display: block;
+      margin-top: 7px;
+      color: #94a3b8;
+      font-size: .7rem;
+      line-height: 1.45;
+    }
+
+    .method-caption {
+      color: var(--muted);
+      font-size: .79rem;
+      margin: 2px 0 -3px;
+    }
+
+    .method-action:disabled,
+    .copy-url-button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    @media (max-width: 620px) {
+      .other-methods,
+      .page-address {
+        grid-template-columns: 1fr;
+      }
+
+      .copy-url-button {
+        width: 100%;
+      }
+    }
+
     .auth-method-title {
       display: block;
       color: #dbe7f5;
@@ -934,45 +1133,76 @@
         <div class="private-wrap">
           <div class="private-panel" aria-labelledby="private-title">
             <div class="lock-badge">🔐 PASSKEY REGISTRATION</div>
-            <h3 id="private-title">첫 패스키를 등록합니다.</h3>
+            <h3 id="private-title">개인 기기에서 첫 패스키를 등록합니다.</h3>
             <p>
-              서버가 매번 새로운 일회용 질문(challenge)을 만들고 저장한 뒤,
-              브라우저가 만든 패스키 응답을 서버가 검증합니다. 개인키는 서버로 전송되지 않습니다.
+              기본 방식은 현재 페이지를 열고 있는 개인 기기 자체에 패스키를 등록하는 것입니다.
+              서버는 일회용 challenge와 공개키 검증 정보만 처리하며 개인키는 서버로 전송되지 않습니다.
             </p>
 
-            <span class="auth-method-title">인증 수단 선택</span>
-            <div class="auth-methods" id="auth-methods" role="group" aria-label="패스키 저장 또는 인증 수단">
-              <button class="auth-method" type="button" data-auth-type="remoteDevice" aria-pressed="true">
-                <strong>📱 휴대폰 / 태블릿</strong>
-                <span>다른 기기의 패스키를 사용합니다. 지원되는 환경에서는 QR 코드 방식으로 연결됩니다.</span>
-              </button>
-              <button class="auth-method" type="button" data-auth-type="securityKey" aria-pressed="false">
-                <strong>🔑 USB 보안 키</strong>
-                <span>FIDO2 호환 USB 보안 키에 패스키를 생성합니다.</span>
-              </button>
-              <button class="auth-method" type="button" data-auth-type="localDevice" aria-pressed="false">
-                <strong>🖥️ Windows Hello / 이 기기</strong>
-                <span>현재 PC의 Windows Hello 등 기기 내장 인증기를 사용합니다.</span>
-              </button>
-            </div>
+            <div class="device-registration">
+              <div class="device-check">
+                <div class="device-check-top">
+                  <div>
+                    <strong id="current-device-label">현재 접속 기기를 확인 중입니다.</strong>
+                    <p id="current-device-note">
+                      이 기기 자체에 저장되는 패스키를 사용할 수 있는지 확인합니다.
+                    </p>
+                  </div>
+                  <span class="device-state" id="platform-state">CHECKING</span>
+                </div>
+              </div>
 
-            <div class="auth-method-guide" id="auth-method-guide">
-              휴대폰 또는 태블릿을 이용하는 방식을 우선 요청합니다. 브라우저가 지원하면 QR 코드가 표시될 수 있습니다.
-            </div>
+              <div class="shared-pc-warning" id="shared-pc-warning">
+                <strong>공용·실습 PC 주의</strong><br>
+                공용 PC에서는 이 기기에 패스키를 등록하지 마세요.
+                개인 휴대폰에서 아래 주소를 직접 열고 <b>이 기기에 패스키 등록</b>을 사용하는 방식이 가장 간단합니다.
+              </div>
 
-            <div class="passkey-form">
-              <label for="passkey-name">이 패스키의 이름</label>
-              <input
-                class="passkey-name-input"
-                id="passkey-name"
-                type="text"
-                maxlength="40"
-                autocomplete="off"
-                placeholder="예: 내 휴대폰 / USB 보안 키 / Windows Hello"
-              >
-              <button class="passkey-button" id="passkey-register" type="button">
-                선택한 인증 수단으로 패스키 등록
-              </button>
+              <div class="page-address">
+                <code id="page-url">현재 주소 확인 중...</code>
+                <button class="copy-url-button" id="copy-url" type="button">주소 복사</button>
+              </div>
+
+              <div class="register-primary">
+                <div class="register-primary-head">
+                  <strong>📱🖥️ 이 기기에 패스키 등록</strong>
+                  <span>
+                    휴대폰에서는 지문·얼굴·화면 잠금이, 개인 Windows PC에서는 Windows Hello가 사용됩니다.
+                    다른 PC와 연결하지 않으므로 PC Bluetooth는 필요하지 않습니다.
+                  </span>
+                </div>
+
+                <div class="passkey-form">
+                  <label for="passkey-name">이 패스키의 이름</label>
+                  <input
+                    class="passkey-name-input"
+                    id="passkey-name"
+                    type="text"
+                    maxlength="40"
+                    autocomplete="off"
+                    placeholder="예: 내 휴대폰 / 개인 노트북"
+                  >
+                  <button class="passkey-button primary-action" id="register-local" type="button">
+                    이 기기에 패스키 등록
+                  </button>
+                </div>
+              </div>
+
+              <p class="method-caption">다른 방법이 필요한 경우</p>
+
+              <div class="other-methods">
+                <button class="method-action" id="register-remote" type="button">
+                  <strong>📱 다른 휴대폰 / 태블릿으로 인증</strong>
+                  <span>PC에서 QR 방식으로 다른 기기의 패스키를 사용합니다.</span>
+                  <small>PC와 휴대폰 양쪽 Bluetooth가 필요한 방식입니다.</small>
+                </button>
+
+                <button class="method-action" id="register-security-key" type="button">
+                  <strong>🔑 USB FIDO2 보안 키</strong>
+                  <span>전용 FIDO2 하드웨어 보안 키를 USB에 연결해 사용합니다.</span>
+                  <small>일반 USB 메모리에는 패스키를 저장할 수 없습니다.</small>
+                </button>
+              </div>
             </div>
 
             <div class="auth-status" id="auth-status" role="status" aria-live="polite">
@@ -980,7 +1210,8 @@
             </div>
 
             <div class="registration-evidence" id="registration-evidence" aria-live="polite">
-              <div><strong>METHOD</strong> 휴대폰 / 태블릿</div>
+              <div><strong>METHOD</strong> -</div>
+              <div><strong>WEBAUTHN</strong> -</div>
               <div><strong>REQUEST</strong> 아직 등록 요청을 보내지 않았습니다.</div>
               <div><strong>CHALLENGE</strong> -</div>
               <div><strong>VERIFY</strong> -</div>
@@ -1027,25 +1258,59 @@
     });
 
     const authStatus = document.getElementById('auth-status');
-    const registerButton = document.getElementById('passkey-register');
     const passkeyName = document.getElementById('passkey-name');
     const passkeyList = document.getElementById('passkey-list');
     const evidenceBox = document.getElementById('registration-evidence');
-    const authMethods = [...document.querySelectorAll('.auth-method')];
-    const authMethodGuide = document.getElementById('auth-method-guide');
-    let selectedAuthType = 'remoteDevice';
+
+    const registerLocalButton = document.getElementById('register-local');
+    const registerRemoteButton = document.getElementById('register-remote');
+    const registerSecurityKeyButton = document.getElementById('register-security-key');
+    const registrationButtons = [
+      registerLocalButton,
+      registerRemoteButton,
+      registerSecurityKeyButton
+    ];
+
+    const currentDeviceLabel = document.getElementById('current-device-label');
+    const currentDeviceNote = document.getElementById('current-device-note');
+    const platformState = document.getElementById('platform-state');
+    const sharedPcWarning = document.getElementById('shared-pc-warning');
+    const pageUrl = document.getElementById('page-url');
+    const copyUrlButton = document.getElementById('copy-url');
+
+    let hasRegisteredPasskey = false;
 
     const evidence = {
-      method: '휴대폰 / 태블릿',
+      method: '-',
+      webauthn: '-',
       request: '아직 등록 요청을 보내지 않았습니다.',
       challenge: '-',
       verify: '-',
       save: '-'
     };
 
+    const authTypeMeta = {
+      localDevice: {
+        label: '이 기기에 등록',
+        webauthn: 'localDevice · platform',
+        waiting: '현재 기기에서 패스키 등록을 진행해 주세요.'
+      },
+      remoteDevice: {
+        label: '다른 휴대폰 / 태블릿',
+        webauthn: 'remoteDevice · hybrid / cross-platform',
+        waiting: '브라우저 안내에 따라 다른 휴대폰 또는 태블릿에서 진행해 주세요.'
+      },
+      securityKey: {
+        label: 'USB FIDO2 보안 키',
+        webauthn: 'securityKey · cross-platform',
+        waiting: 'FIDO2 보안 키를 USB 포트에 연결한 뒤 등록을 진행해 주세요.'
+      }
+    };
+
     function renderEvidence() {
       evidenceBox.innerHTML = `
         <div><strong>METHOD</strong> ${escapeHTML(evidence.method)}</div>
+        <div><strong>WEBAUTHN</strong> ${escapeHTML(evidence.webauthn)}</div>
         <div><strong>REQUEST</strong> ${escapeHTML(evidence.request)}</div>
         <div><strong>CHALLENGE</strong> ${escapeHTML(evidence.challenge)}</div>
         <div><strong>VERIFY</strong> ${escapeHTML(evidence.verify)}</div>
@@ -1067,38 +1332,88 @@
       return value.length > 30 ? `${value.slice(0, 18)}…${value.slice(-8)}` : value;
     }
 
-    const authTypeMeta = {
-      remoteDevice: {
-        label: '휴대폰 / 태블릿',
-        guide: '휴대폰 또는 태블릿을 이용하는 방식을 우선 요청합니다. 브라우저가 지원하면 QR 코드가 표시될 수 있습니다.',
-        waiting: '휴대폰 또는 태블릿에서 패스키 등록을 진행해 주세요.'
-      },
-      securityKey: {
-        label: 'USB 보안 키',
-        guide: 'FIDO2 호환 USB 보안 키 방식을 우선 요청합니다. 보안 키를 USB 포트에 연결한 뒤 브라우저 안내를 따라 주세요.',
-        waiting: 'USB 보안 키를 연결하고 패스키 등록을 진행해 주세요.'
-      },
-      localDevice: {
-        label: 'Windows Hello / 이 기기',
-        guide: '현재 PC의 플랫폼 인증기를 우선 요청합니다. Windows에서는 Windows Hello PIN·지문·얼굴 인식 등이 표시될 수 있습니다.',
-        waiting: '이 기기의 Windows Hello 등 플랫폼 인증기로 등록해 주세요.'
-      }
-    };
-
-    function setAuthType(type) {
-      if (!authTypeMeta[type]) return;
-      selectedAuthType = type;
-      authMethods.forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.dataset.authType === type));
+    function setRegistrationControlsDisabled(disabled) {
+      passkeyName.disabled = disabled;
+      registrationButtons.forEach((button) => {
+        if (button) button.disabled = disabled;
       });
-      authMethodGuide.textContent = authTypeMeta[type].guide;
-      evidence.method = authTypeMeta[type].label;
-      renderEvidence();
     }
 
-    authMethods.forEach((button) => {
-      button.addEventListener('click', () => setAuthType(button.dataset.authType));
-    });
+    function detectMobileLikeDevice() {
+      if (navigator.userAgentData && typeof navigator.userAgentData.mobile === 'boolean') {
+        return navigator.userAgentData.mobile;
+      }
+
+      const ua = navigator.userAgent || '';
+      if (/Android|iPhone|iPod|Mobile/i.test(ua)) return true;
+
+      // iPadOS may identify itself as Macintosh.
+      return /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+    }
+
+    async function inspectCurrentDevice() {
+      const mobileLike = detectMobileLikeDevice();
+
+      currentDeviceLabel.textContent = mobileLike
+        ? '현재 기기: 휴대폰 / 태블릿'
+        : '현재 기기: PC / 데스크톱 브라우저';
+
+      if (mobileLike) {
+        sharedPcWarning.innerHTML =
+          '<strong>개인 휴대폰에서 접속한 경우</strong><br>' +
+          '위의 <b>이 기기에 패스키 등록</b>을 사용하면 PC Bluetooth 없이 휴대폰 자체에 패스키를 만들 수 있습니다.';
+      }
+
+      if (!window.PublicKeyCredential) {
+        platformState.textContent = 'UNSUPPORTED';
+        platformState.classList.add('bad');
+        currentDeviceNote.textContent = '이 브라우저는 WebAuthn / 패스키 API를 지원하지 않습니다.';
+        registerLocalButton.disabled = true;
+        return;
+      }
+
+      if (typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable !== 'function') {
+        platformState.textContent = 'UNKNOWN';
+        currentDeviceNote.textContent =
+          '현재 기기의 내장 인증기 지원 여부를 자동 확인할 수 없습니다. 브라우저 안내에 따라 진행해 주세요.';
+        return;
+      }
+
+      try {
+        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+
+        if (available) {
+          platformState.textContent = 'AVAILABLE';
+          platformState.classList.add('good');
+          currentDeviceNote.textContent = mobileLike
+            ? '휴대폰의 지문·얼굴·화면 잠금 등으로 패스키를 등록할 수 있는 환경입니다.'
+            : '현재 기기의 플랫폼 인증기(예: Windows Hello)를 사용할 수 있는 환경입니다.';
+        } else {
+          platformState.textContent = 'UNAVAILABLE';
+          platformState.classList.add('bad');
+          currentDeviceNote.textContent =
+            '현재 기기에서 사용할 수 있는 플랫폼 인증기가 확인되지 않았습니다. 개인 휴대폰에서 페이지를 직접 열거나 다른 방법을 사용하세요.';
+          registerLocalButton.disabled = true;
+        }
+      } catch (_) {
+        platformState.textContent = 'UNKNOWN';
+        currentDeviceNote.textContent =
+          '현재 기기의 인증기 지원 여부를 확인하지 못했습니다. 브라우저 안내에 따라 진행해 주세요.';
+      }
+    }
+
+    async function copyCurrentUrl() {
+      const value = location.href.split('#')[0];
+      try {
+        await navigator.clipboard.writeText(value);
+        copyUrlButton.textContent = '복사됨';
+        setTimeout(() => {
+          copyUrlButton.textContent = '주소 복사';
+        }, 1400);
+      } catch (_) {
+        window.prompt('아래 주소를 복사해 개인 휴대폰에서 열어 주세요.', value);
+      }
+    }
 
     async function loadPasskeys() {
       try {
@@ -1110,13 +1425,17 @@
         if (!response.ok) throw new Error(data.message || '목록 조회 실패');
 
         if (!data.passkeys.length) {
+          hasRegisteredPasskey = false;
           passkeyList.innerHTML = '<div class="passkey-row"><span>아직 등록된 패스키가 없습니다.</span></div>';
           return;
         }
 
+        hasRegisteredPasskey = true;
         passkeyList.innerHTML = data.passkeys.map((item) => {
           const when = new Date(item.createdAt).toLocaleString('ko-KR');
-          const device = item.deviceType === 'multiDevice' ? '동기화 가능한 패스키' : '기기 기반 패스키';
+          const device = item.deviceType === 'multiDevice'
+            ? '동기화 가능한 패스키'
+            : '기기 기반 패스키';
           return `
             <div class="passkey-row">
               <strong>${escapeHTML(item.name)}</strong>
@@ -1125,10 +1444,7 @@
           `;
         }).join('');
 
-        // Card 2에서는 최초 1개만 등록합니다. Card 4에서 인증 후 추가 등록을 열 예정입니다.
-        registerButton.disabled = true;
-        passkeyName.disabled = true;
-        authMethods.forEach((button) => button.disabled = true);
+        setRegistrationControlsDisabled(true);
         authStatus.textContent = '첫 패스키 등록 완료 · 추가 등록은 Card 4에서 진행합니다.';
       } catch (error) {
         passkeyList.innerHTML = `<div class="passkey-row"><span>${escapeHTML(error.message)}</span></div>`;
@@ -1144,11 +1460,14 @@
           body: JSON.stringify({ registrationId })
         });
       } catch (_) {
-        // 화면 취소 안내를 방해하지 않도록 별도 오류는 표시하지 않습니다.
+        // 취소 안내 자체를 방해하지 않도록 별도 오류는 표시하지 않습니다.
       }
     }
 
-    async function registerPasskey() {
+    async function registerPasskey(authType) {
+      const meta = authTypeMeta[authType];
+      if (!meta) return;
+
       const name = passkeyName.value.trim();
       if (!name) {
         authStatus.textContent = '패스키 이름을 먼저 입력해 주세요.';
@@ -1161,18 +1480,19 @@
         return;
       }
 
-      registerButton.disabled = true;
-      passkeyName.disabled = true;
-      authMethods.forEach((button) => button.disabled = true);
-      evidence.method = authTypeMeta[selectedAuthType].label;
-      authStatus.textContent = '서버에서 선택한 인증 수단용 등록 질문을 만드는 중...';
+      setRegistrationControlsDisabled(true);
+      evidence.method = meta.label;
+      evidence.webauthn = meta.webauthn;
       evidence.request = 'POST /api/passkey/register/options';
       evidence.challenge = '-';
       evidence.verify = '-';
       evidence.save = '-';
       renderEvidence();
 
+      authStatus.textContent = '서버에서 등록용 challenge를 만드는 중...';
+
       let registrationId = null;
+
       try {
         const optionResponse = await fetch('/api/passkey/register/options', {
           method: 'POST',
@@ -1180,8 +1500,12 @@
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ name, authenticatorType: selectedAuthType })
+          body: JSON.stringify({
+            name,
+            authenticatorType: authType
+          })
         });
+
         const optionData = await optionResponse.json();
         if (!optionResponse.ok) {
           throw new Error(optionData.message || `등록 질문 요청 실패 (${optionResponse.status})`);
@@ -1192,37 +1516,49 @@
         evidence.challenge = challengePreview(optionData.optionsJSON.challenge);
         renderEvidence();
 
-        authStatus.textContent = authTypeMeta[selectedAuthType].waiting;
+        authStatus.textContent = meta.waiting;
+
         const credential = await SimpleWebAuthnBrowser.startRegistration({
           optionsJSON: optionData.optionsJSON
         });
 
-        authStatus.textContent = '서버에서 공개키와 서명을 검증하는 중...';
+        authStatus.textContent = '서버에서 등록 응답과 공개키를 검증하는 중...';
+
         const verifyResponse = await fetch('/api/passkey/register/verify', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({ registrationId, credential })
+          body: JSON.stringify({
+            registrationId,
+            credential
+          })
         });
+
         const verifyData = await verifyResponse.json();
 
         if (!verifyResponse.ok || !verifyData.verified) {
           throw new Error(verifyData.message || `검증 실패 (${verifyResponse.status})`);
         }
 
-        evidence.verify = 'VERIFIED · 서명/Origin/RP ID 확인 완료';
+        evidence.verify = 'VERIFIED · challenge / Origin / RP ID 확인 완료';
         evidence.save = `완료 · ${verifyData.passkey.name} · 공개키 서버 저장`;
         renderEvidence();
+
         authStatus.textContent = '패스키 등록이 완료되었습니다.';
         await loadPasskeys();
       } catch (error) {
-        const isCancel = error && (error.name === 'NotAllowedError' || error.name === 'AbortError');
+        const isCancel = error && (
+          error.name === 'NotAllowedError' ||
+          error.name === 'AbortError'
+        );
+
         await cancelRegistration(registrationId);
 
         if (isCancel) {
-          authStatus.textContent = '패스키 등록을 취소했습니다. 서버에 패스키가 저장되지 않았습니다.';
+          authStatus.textContent =
+            '패스키 등록을 취소했습니다. 서버에 패스키가 저장되지 않았습니다.';
           evidence.verify = 'CANCELLED';
           evidence.save = '없음';
         } else {
@@ -1230,24 +1566,32 @@
           evidence.verify = 'FAILED';
           evidence.save = '없음';
         }
+
         renderEvidence();
-        registerButton.disabled = false;
-        passkeyName.disabled = false;
-        authMethods.forEach((button) => button.disabled = false);
+
+        if (!hasRegisteredPasskey) {
+          setRegistrationControlsDisabled(false);
+          await inspectCurrentDevice();
+        }
       }
     }
 
-    registerButton.addEventListener('click', registerPasskey);
+    registerLocalButton.addEventListener('click', () => registerPasskey('localDevice'));
+    registerRemoteButton.addEventListener('click', () => registerPasskey('remoteDevice'));
+    registerSecurityKeyButton.addEventListener('click', () => registerPasskey('securityKey'));
+    copyUrlButton.addEventListener('click', copyCurrentUrl);
+
+    pageUrl.textContent = location.href.split('#')[0];
 
     if (window.PublicKeyCredential && window.SimpleWebAuthnBrowser) {
-      authStatus.textContent = '패스키를 등록할 수 있습니다.';
+      authStatus.textContent = '패스키 등록 준비가 되었습니다.';
     } else {
       authStatus.textContent = '패스키를 지원하지 않는 브라우저입니다.';
-      registerButton.disabled = true;
+      setRegistrationControlsDisabled(true);
     }
 
-    setAuthType('remoteDevice');
     renderEvidence();
+    inspectCurrentDevice();
     loadPasskeys();
   </script>
 </body>
