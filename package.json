@@ -1,0 +1,13 @@
+{
+  "name": "network-security-profile-passkey",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "14.0.0",
+    "@supabase/supabase-js": "^2.57.4",
+    "web-push": "^3.6.7"
+  }
+}

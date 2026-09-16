@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>PC 로그인 승인</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1020;--panel:#121a2d;--text:#edf2f7;--muted:#9aa8bd;--accent:#5eead4;--accent2:#60a5fa;--bad:#fca5a5}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 10%,rgba(96,165,250,.18),transparent 32%),var(--bg);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:var(--text);display:grid;place-items:center;padding:24px}
+    main{width:min(100%,520px);background:rgba(18,26,45,.96);border:1px solid rgba(94,234,212,.28);border-radius:26px;padding:28px;box-shadow:0 28px 70px rgba(0,0,0,.35)}
+    .badge{display:inline-block;border:1px solid rgba(94,234,212,.35);border-radius:999px;padding:7px 12px;color:var(--accent);font-weight:800;font-size:13px}
+    h1{font-size:27px;line-height:1.3;margin:18px 0 10px} p{color:var(--muted);line-height:1.75}.device{margin:22px 0;padding:18px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08)}
+    .device strong{display:block;color:var(--accent);margin-bottom:6px}.actions{display:grid;gap:12px;margin-top:20px}button{width:100%;border:0;border-radius:16px;padding:16px;font-size:16px;font-weight:800;cursor:pointer}.approve{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#07111d}.reject{background:#1c263c;color:var(--text);border:1px solid rgba(255,255,255,.1)}button:disabled{opacity:.55;cursor:not-allowed}.status{margin-top:18px;padding:14px 16px;border-radius:14px;background:#0b1222;color:var(--muted);white-space:pre-line}.status.good{color:var(--accent)}.status.bad{color:var(--bad)}
+  </style>
+</head>
+<body>
+<main>
+  <span class="badge">📱 PC LOGIN APPROVAL</span>
+  <h1>PC 로그인 요청을 확인합니다.</h1>
+  <p>요청한 PC가 맞다면 아래에서 패스키 본인 인증을 완료해 승인하세요. 개인키는 이 휴대폰 밖으로 나가지 않습니다.</p>
+  <div class="device"><strong id="device">요청 정보를 불러오는 중...</strong><span id="expires"></span></div>
+  <div class="actions">
+    <button class="approve" id="approve" disabled>패스키로 본인 인증 후 승인</button>
+    <button class="reject" id="reject" disabled>이 요청 거절</button>
+  </div>
+  <div class="status" id="status">로그인 요청을 확인하는 중입니다.</div>
+</main>
+<script src="https://unpkg.com/@simplewebauthn/browser@14.0.0/dist/bundle/index.umd.min.js"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const requestId = params.get('requestId') || '';
+  const phoneToken = params.get('token') || '';
+  if (requestId && phoneToken) history.replaceState({}, '', '/phone-auth.html');
+
+  const approveButton = document.getElementById('approve');
+  const rejectButton = document.getElementById('reject');
+  const statusBox = document.getElementById('status');
+  const deviceBox = document.getElementById('device');
+  const expiresBox = document.getElementById('expires');
+  let requestDetails = null;
+
+  async function api(path, body) {
+    const response = await fetch(path, {
+      method: 'POST', headers: {'Content-Type':'application/json','Accept':'application/json'},
+      credentials: 'same-origin', body: JSON.stringify(body)
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || data.error || `요청 실패 (${response.status})`);
+    return data;
+  }
+
+  async function loadRequest() {
+    if (!requestId || !phoneToken) {
+      statusBox.className = 'status bad';
+      statusBox.textContent = '로그인 승인 링크가 올바르지 않습니다.';
+      return;
+    }
+    try {
+      requestDetails = await api('/api/passkey/remote', { action: 'details', requestId, phoneToken });
+      deviceBox.textContent = `${requestDetails.requestDevice || 'PC'}에서 로그인 요청`;
+      expiresBox.textContent = `승인 가능 시간: ${new Date(requestDetails.expiresAt).toLocaleTimeString()}`;
+      if (requestDetails.status !== 'pending') {
+        statusBox.textContent = `이 요청은 이미 처리되었습니다. (${requestDetails.status})`;
+        return;
+      }
+      approveButton.disabled = false;
+      rejectButton.disabled = false;
+      statusBox.textContent = '요청한 PC가 맞으면 승인 버튼을 눌러 주세요.';
+    } catch (error) {
+      statusBox.className = 'status bad';
+      statusBox.textContent = error.message;
+    }
+  }
+
+  approveButton.addEventListener('click', async () => {
+    approveButton.disabled = true; rejectButton.disabled = true;
+    statusBox.className = 'status';
+    statusBox.textContent = '휴대폰의 패스키로 본인 인증해 주세요.';
+    try {
+      if (!window.PublicKeyCredential || !window.SimpleWebAuthnBrowser) throw new Error('이 브라우저에서는 패스키 인증을 사용할 수 없습니다.');
+      const credential = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: requestDetails.optionsJSON });
+      statusBox.textContent = '서버가 저장된 공개키로 서명을 확인하는 중입니다.';
+      const data = await api('/api/passkey/remote', { action: 'approve', requestId, phoneToken, credential });
+      statusBox.className = 'status good';
+      statusBox.textContent = `${data.message}\nPC 화면에서 자동으로 로그인이 완료됩니다.`;
+    } catch (error) {
+      const cancelled = error && (error.name === 'NotAllowedError' || error.name === 'AbortError');
+      statusBox.className = 'status bad';
+      statusBox.textContent = cancelled ? '패스키 인증을 취소했습니다. 다시 승인할 수 있습니다.' : error.message;
+      approveButton.disabled = false; rejectButton.disabled = false;
+    }
+  });
+
+  rejectButton.addEventListener('click', async () => {
+    approveButton.disabled = true; rejectButton.disabled = true;
+    try {
+      await api('/api/passkey/remote', { action: 'reject', requestId, phoneToken });
+      statusBox.className = 'status bad';
+      statusBox.textContent = 'PC 로그인 요청을 거절했습니다.';
+    } catch (error) {
+      statusBox.className = 'status bad';
+      statusBox.textContent = error.message;
+    }
+  });
+
+  loadRequest();
+</script>
+</body>
+</html>
