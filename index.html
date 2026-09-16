@@ -1719,13 +1719,13 @@
 
     async function requestPassStyleLogin() {
       setCard3Busy(true);
-      loginEvidence.request = 'POST /api/passkey/remote/request';
+      loginEvidence.request = 'POST /api/passkey/remote · action=request';
       loginEvidence.verify = '휴대폰 승인 대기 중';
       renderLoginEvidence();
       loginStatus.textContent = '연결된 휴대폰으로 로그인 승인 알림을 보내는 중...';
 
       try {
-        const { response, data } = await remoteApi('/api/passkey/remote/request', {});
+        const { response, data } = await remoteApi('/api/passkey/remote', { action: 'request' });
         if (!response.ok) throw new Error(data.message || `휴대폰 로그인 요청 실패 (${response.status})`);
 
         loginEvidence.request = `200 OK · requestId ${data.requestId}`;
@@ -1738,7 +1738,8 @@
         const deadline = Date.parse(data.expiresAt) || (Date.now() + 120000);
         while (Date.now() < deadline) {
           await sleep(1500);
-          const statusResult = await remoteApi('/api/passkey/remote/status', {
+          const statusResult = await remoteApi('/api/passkey/remote', {
+            action: 'status',
             requestId: data.requestId,
             browserSecret: data.browserSecret
           });
@@ -1748,7 +1749,8 @@
           if (status === 'pending') continue;
           if (status === 'approved') {
             loginStatus.textContent = '휴대폰 본인 인증 성공 · PC 세션을 발급하는 중...';
-            const completeResult = await remoteApi('/api/passkey/remote/complete', {
+            const completeResult = await remoteApi('/api/passkey/remote', {
+              action: 'complete',
               requestId: data.requestId,
               browserSecret: data.browserSecret
             });

@@ -57,7 +57,7 @@
       return;
     }
     try {
-      requestDetails = await api('/api/passkey/remote/details', { requestId, phoneToken });
+      requestDetails = await api('/api/passkey/remote', { action: 'details', requestId, phoneToken });
       deviceBox.textContent = `${requestDetails.requestDevice || 'PC'}에서 로그인 요청`;
       expiresBox.textContent = `승인 가능 시간: ${new Date(requestDetails.expiresAt).toLocaleTimeString()}`;
       if (requestDetails.status !== 'pending') {
@@ -81,7 +81,7 @@
       if (!window.PublicKeyCredential || !window.SimpleWebAuthnBrowser) throw new Error('이 브라우저에서는 패스키 인증을 사용할 수 없습니다.');
       const credential = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: requestDetails.optionsJSON });
       statusBox.textContent = '서버가 저장된 공개키로 서명을 확인하는 중입니다.';
-      const data = await api('/api/passkey/remote/approve', { requestId, phoneToken, credential });
+      const data = await api('/api/passkey/remote', { action: 'approve', requestId, phoneToken, credential });
       statusBox.className = 'status good';
       statusBox.textContent = `${data.message}\nPC 화면에서 자동으로 로그인이 완료됩니다.`;
     } catch (error) {
@@ -95,7 +95,7 @@
   rejectButton.addEventListener('click', async () => {
     approveButton.disabled = true; rejectButton.disabled = true;
     try {
-      await api('/api/passkey/remote/reject', { requestId, phoneToken });
+      await api('/api/passkey/remote', { action: 'reject', requestId, phoneToken });
       statusBox.className = 'status bad';
       statusBox.textContent = 'PC 로그인 요청을 거절했습니다.';
     } catch (error) {
