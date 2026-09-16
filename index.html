@@ -1661,7 +1661,8 @@
           throw new Error('알림 권한이 허용되지 않았습니다. 브라우저 사이트 설정에서 알림을 허용해 주세요.');
         }
 
-        const registration = await navigator.serviceWorker.register('/sw.js');
+        const registration = await navigator.serviceWorker.register('/sw.js?v=card3-pass-notification-v2', { updateViaCache: 'none' });
+        await registration.update();
         await navigator.serviceWorker.ready;
 
         const keyResponse = await fetch('/api/push', {
