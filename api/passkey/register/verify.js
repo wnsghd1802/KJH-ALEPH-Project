@@ -63,15 +63,9 @@ export default async function handler(req, res) {
       return jsonError(res, 400, 'NOT_VERIFIED', '패스키 등록 응답이 검증되지 않았습니다.');
     }
 
-    // 최초 등록 엔드포인트가므로 검증 직전에도 기존 패스키 유무를 한 번 더 확인합니다.
-    const { count, error: countError } = await db
-      .from('passkeys')
-      .select('id', { count: 'exact', head: true })
-      .eq('owner_id', OWNER_ID);
-    if (countError) throw countError;
-    if ((count || 0) > 0) {
-      return jsonError(res, 409, 'FIRST_PASSKEY_ALREADY_REGISTERED', '이미 최초 패스키가 등록되어 있습니다.');
-    }
+    // Card 4에서는 동일 계정에 여러 패스키를 등록할 수 있습니다.
+    // 추가 등록 권한은 options 단계에서 유효한 로그인 세션으로 확인하고,
+    // credential_id의 UNIQUE 제약으로 같은 패스키의 중복 저장을 막습니다.
 
     const {
       credential: verifiedCredential,
@@ -104,9 +98,16 @@ export default async function handler(req, res) {
       throw saveError;
     }
 
+    const { count: passkeyCount, error: countError } = await db
+      .from('passkeys')
+      .select('id', { count: 'exact', head: true })
+      .eq('owner_id', OWNER_ID);
+    if (countError) throw countError;
+
     return res.status(200).json({
       ok: true,
       verified: true,
+      passkeyCount: passkeyCount || 0,
       passkey: {
         id: saved.id,
         name: saved.name,

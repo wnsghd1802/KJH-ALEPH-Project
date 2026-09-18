@@ -82,6 +82,25 @@ export function clearSessionCookie(req, res) {
   res.setHeader('Set-Cookie', parts.join('; '));
 }
 
+
+export async function getActiveSession(req, db = getDB()) {
+  const token = readCookie(req, SESSION_COOKIE);
+  if (!token) return null;
+
+  const now = new Date().toISOString();
+  const { data: session, error } = await db
+    .from('auth_sessions')
+    .select('id, expires_at, revoked_at')
+    .eq('owner_id', OWNER_ID)
+    .eq('token_hash', hashSessionToken(token))
+    .is('revoked_at', null)
+    .gt('expires_at', now)
+    .maybeSingle();
+
+  if (error) throw error;
+  return session || null;
+}
+
 export function createOpaqueSecret(bytes = 32) {
   return crypto.randomBytes(bytes).toString('base64url');
 }

@@ -1,5 +1,5 @@
 import { generateRegistrationOptions } from '@simplewebauthn/server';
-import { getDB, OWNER_ID, RP_NAME, CHALLENGE_TTL_MS, getWebAuthnConfig, noStore, jsonError } from '../../_lib/common.js';
+import { getDB, OWNER_ID, RP_NAME, CHALLENGE_TTL_MS, getWebAuthnConfig, getActiveSession, noStore, jsonError } from '../../_lib/common.js';
 
 export default async function handler(req, res) {
   noStore(res);
@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     const authenticatorType = String(req.body?.authenticatorType || 'localDevice');
     const testMode = req.body?.testMode === true;
     const allowedAuthenticatorTypes = new Set(['remoteDevice', 'securityKey', 'localDevice']);
+
     if (!name || name.length > 40) {
       return jsonError(res, 400, 'INVALID_NAME', '패스키 이름은 1~40자로 입력해 주세요.');
     }
@@ -22,15 +23,25 @@ export default async function handler(req, res) {
 
     const { data: existing, error: existingError } = await db
       .from('passkeys')
-      .select('credential_id, transports')
-      .eq('owner_id', OWNER_ID);
+      .select('id, credential_id, transports')
+      .eq('owner_id', OWNER_ID)
+      .order('created_at', { ascending: true });
 
     if (existingError) throw existingError;
 
-    // 일반 등록은 최초 1개만 허용합니다.
-    // Card 2 취소 테스트(testMode)는 기존 패스키가 있어도 challenge 발급만 허용합니다.
+    // 첫 패스키는 Card 2 초기 설정으로 등록할 수 있습니다.
+    // 이미 패스키가 하나 이상 있으면 Card 4의 추가 등록이므로 기존 패스키 로그인 세션을 요구합니다.
+    // 취소 테스트는 실제 저장을 하지 않으므로 기존 Card 2 증빙을 위해 세션 요구에서 제외합니다.
     if (!testMode && (existing || []).length > 0) {
-      return jsonError(res, 409, 'FIRST_PASSKEY_ALREADY_REGISTERED', '첫 패스키가 이미 등록되어 있습니다. 추가 등록은 Card 4에서 진행합니다.');
+      const session = await getActiveSession(req, db);
+      if (!session) {
+        return jsonError(
+          res,
+          401,
+          'AUTH_REQUIRED_TO_ADD_PASSKEY',
+          '새 패스키를 추가하려면 먼저 위의 패스키 로그인으로 본인 확인을 해 주세요.'
+        );
+      }
     }
 
     const optionsJSON = await generateRegistrationOptions({
@@ -40,6 +51,8 @@ export default async function handler(req, res) {
       userName: OWNER_ID,
       userDisplayName: 'Portfolio Owner',
       attestationType: 'none',
+      // Card 4: 이미 서버에 등록된 credential을 모두 제외해 같은 credential의 중복 등록을 막습니다.
+      // Samsung Pass 등 다른 credential provider에는 기존 credential이 없으므로 새 패스키를 만들 수 있습니다.
       excludeCredentials: testMode
         ? []
         : (existing || []).map((item) => ({
@@ -50,14 +63,11 @@ export default async function handler(req, res) {
         residentKey: 'required',
         userVerification: 'required',
       },
-      // SimpleWebAuthn이 WebAuthn hints + 하위 호환용 authenticatorAttachment를 함께 구성합니다.
-      // localDevice: 현재 기기(휴대폰 생체 인증/Windows Hello), remoteDevice: 다른 휴대폰(hybrid), securityKey: USB/FIDO2 키
       preferredAuthenticatorType: authenticatorType,
       supportedAlgorithmIDs: [-7, -257],
       timeout: 60_000,
     });
 
-    // 이전에 끝나지 않은 최초 등록 challenge는 정리합니다.
     await db
       .from('webauthn_challenges')
       .delete()
@@ -84,6 +94,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       testMode,
+      mode: (existing || []).length > 0 ? 'additional' : 'first',
+      existingCount: (existing || []).length,
       registrationId: challengeRow.id,
       optionsJSON,
     });
