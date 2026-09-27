@@ -1,21 +1,17 @@
-import { getDB, OWNER_ID, noStore, jsonError, SESSION_COOKIE, clearSessionCookie, hashSessionToken, readCookie } from '../_lib/common.js';
+import { getDB, noStore, jsonError, SESSION_COOKIE, clearSessionCookie, hashSessionToken, readCookie } from '../_lib/common.js';
 
 export default async function handler(req, res) {
   noStore(res);
   if (req.method !== 'POST') return jsonError(res, 405, 'METHOD_NOT_ALLOWED', 'POST 요청만 허용됩니다.');
-
   try {
     const token = readCookie(req, SESSION_COOKIE);
     if (token) {
       const db = getDB();
-      await db
-        .from('auth_sessions')
+      await db.from('auth_sessions')
         .update({ revoked_at: new Date().toISOString() })
-        .eq('owner_id', OWNER_ID)
         .eq('token_hash', hashSessionToken(token))
         .is('revoked_at', null);
     }
-
     clearSessionCookie(req, res);
     return res.status(200).json({ ok: true, loggedOut: true });
   } catch (error) {

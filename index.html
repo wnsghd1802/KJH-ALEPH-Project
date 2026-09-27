@@ -926,6 +926,31 @@
       line-height: 1.7;
     }
 
+    /* Task 8 / Card 5: two-account access control */
+    .account-switcher {
+      margin: 0 0 22px;
+      padding: 18px;
+      border: 1px solid rgba(96,165,250,.24);
+      border-radius: 18px;
+      background: rgba(15,23,42,.7);
+    }
+    .account-switcher-head { display:flex; justify-content:space-between; gap:14px; align-items:center; margin-bottom:12px; }
+    .account-switcher-head strong { font-size:.92rem; }
+    .account-switcher-head span { color:var(--muted); font-size:.82rem; }
+    .account-buttons { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .account-button {
+      border:1px solid var(--border); background:rgba(255,255,255,.025); color:var(--text);
+      border-radius:14px; padding:13px 14px; cursor:pointer; text-align:left; font-weight:800;
+    }
+    .account-button small { display:block; margin-top:4px; color:var(--muted); font-weight:500; }
+    .account-button.active { border-color:rgba(94,234,212,.65); background:rgba(94,234,212,.08); }
+    .card5-test-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:18px 0; }
+    .card5-result { margin-top:14px; display:grid; gap:9px; }
+    .card5-result-row { padding:13px 15px; border:1px solid var(--border); border-radius:14px; color:var(--muted); font-size:.86rem; }
+    .card5-result-row.good { border-color:rgba(94,234,212,.35); }
+    .card5-result-row.bad { border-color:rgba(252,165,165,.35); }
+    @media (max-width: 720px) { .account-buttons, .card5-test-grid { grid-template-columns:1fr; } }
+
     /* Task 8 / Card 3: Passkey authentication */
     .card3-login { margin: 0 0 28px; }
     .card3-login .private-panel { padding: 30px; }
@@ -1338,8 +1363,26 @@
 
     <section id="private">
       <div class="container">
-        <div class="section-label">06 / Private · Card 3</div>
+        <div class="section-label">06 / Private · Card 3–5</div>
         <h2>나만 보기</h2>
+
+        <div class="account-switcher" id="account-switcher">
+          <div class="account-switcher-head">
+            <strong>Card 5 테스트 계정</strong>
+            <span id="selected-account-text">Portfolio Owner 선택됨</span>
+          </div>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:.84rem;">두 계정과 비공개 자료는 인증·접근제어 검증을 위한 과제용 예시 데이터입니다.</p>
+          <div class="account-buttons">
+            <button class="account-button active" type="button" data-account-id="portfolio-owner">
+              Portfolio Owner
+              <small>portfolio-owner · 기존 계정</small>
+            </button>
+            <button class="account-button" type="button" data-account-id="portfolio-reviewer">
+              Portfolio Reviewer
+              <small>portfolio-reviewer · 두 번째 테스트 계정</small>
+            </button>
+          </div>
+        </div>
 
         <div class="card3-login">
           <div class="private-panel" aria-labelledby="login-title">
@@ -1505,6 +1548,26 @@
             </div>
           </aside>
         </div>
+
+        <div class="card2-divider">Card 5 · 계정 분리 / 접근 제어 검증</div>
+        <div class="card3-login">
+          <div class="private-panel" aria-labelledby="card5-title">
+            <div class="lock-badge">🛡️ ACCESS CONTROL · CARD 5</div>
+            <h3 id="card5-title">로그인한 계정의 자료만 서버에서 반환합니다.</h3>
+            <p>
+              선택한 계정으로 로그인한 뒤 반대 계정의 비공개 자료 접근을 시도합니다.
+              명시적인 교차 계정 조회는 403으로 거절하고, URL의 계정 ID를 임의로 바꾸어도 서버는 세션의 계정만 기준으로 조회합니다.
+            </p>
+            <div class="card5-test-grid">
+              <button class="card3-action" id="card5-cross-test" type="button">반대 계정 자료 접근 테스트</button>
+              <button class="card3-action" id="card5-tamper-test" type="button">URL 계정 ID 변조 테스트</button>
+            </div>
+            <div class="auth-status" id="card5-status">Card 5 테스트는 로그인 후 실행할 수 있습니다.</div>
+            <div class="card5-result" id="card5-result">
+              <div class="card5-result-row">아직 계정 간 접근 테스트를 실행하지 않았습니다.</div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1532,6 +1595,30 @@
       });
     });
 
+
+    // Task 8 / Card 5 - account selection
+    const ACCOUNT_META = {
+      'portfolio-owner': { label: 'Portfolio Owner' },
+      'portfolio-reviewer': { label: 'Portfolio Reviewer' }
+    };
+    let selectedAccountId = localStorage.getItem('task8_selected_account');
+    if (!ACCOUNT_META[selectedAccountId]) selectedAccountId = 'portfolio-owner';
+    let currentSessionOwnerId = null;
+    const accountButtons = [...document.querySelectorAll('[data-account-id]')];
+    const selectedAccountText = document.getElementById('selected-account-text');
+    const card5CrossButton = document.getElementById('card5-cross-test');
+    const card5TamperButton = document.getElementById('card5-tamper-test');
+    const card5Status = document.getElementById('card5-status');
+    const card5Result = document.getElementById('card5-result');
+
+    function otherAccountId(accountId) {
+      return accountId === 'portfolio-owner' ? 'portfolio-reviewer' : 'portfolio-owner';
+    }
+
+    function renderSelectedAccount() {
+      accountButtons.forEach((button) => button.classList.toggle('active', button.dataset.accountId === selectedAccountId));
+      selectedAccountText.textContent = `${ACCOUNT_META[selectedAccountId].label} 선택됨`;
+    }
 
     // Task 8 / Card 3 - Passkey authentication
     const loginButton = document.getElementById('passkey-login');
@@ -1597,7 +1684,7 @@
           'Accept': 'application/json'
         },
         credentials: 'same-origin',
-        body: JSON.stringify({ authMode })
+        body: JSON.stringify({ authMode, accountId: selectedAccountId })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || `로그인 질문 요청 실패 (${response.status})`);
@@ -1688,6 +1775,7 @@
 
         loginEvidence.verify = 'VERIFIED · 저장된 공개키로 서명 확인 성공';
         loginEvidence.session = `${data.session?.type || 'HttpOnly cookie'} · ${data.session?.display || 'task8_session=••••••••'}`;
+        currentSessionOwnerId = data.ownerId || selectedAccountId;
         loginState.textContent = 'SIGNED IN';
         loginStatus.textContent = '패스키 로그인 성공 · 비공개 자료 접근이 허용되었습니다.';
         addCard3Log('서명 성공 요청', '200 VERIFIED · 공개키 검증 후 HttpOnly 세션 발급', 'good');
@@ -1791,7 +1879,7 @@
       loginStatus.textContent = '연결된 휴대폰으로 로그인 승인 알림을 보내는 중...';
 
       try {
-        const { response, data } = await remoteApi('/api/passkey/remote', { action: 'request' });
+        const { response, data } = await remoteApi('/api/passkey/remote', { action: 'request', accountId: selectedAccountId });
         if (!response.ok) throw new Error(data.message || `휴대폰 로그인 요청 실패 (${response.status})`);
 
         loginEvidence.request = `200 OK · requestId ${data.requestId}`;
@@ -1824,6 +1912,7 @@
 
             loginEvidence.verify = 'VERIFIED · 휴대폰에서 저장된 공개키 검증 성공';
             loginEvidence.session = `${completeResult.data.session?.type || 'HttpOnly cookie'} · ${completeResult.data.session?.display || 'task8_session=••••••••'}`;
+            currentSessionOwnerId = completeResult.data.ownerId || selectedAccountId;
             loginState.textContent = 'SIGNED IN';
             loginStatus.textContent = '휴대폰 승인 완료 · PC 로그인이 자동으로 완료되었습니다.';
             addCard3Log('휴대폰 승인 로그인', '200 VERIFIED · PC HttpOnly 세션 발급', 'good');
@@ -1916,6 +2005,7 @@
         if (!response.ok) {
           loginEvidence.private = `${response.status} ${data.error || 'DENIED'} · 로그인 없이는 거절`;
           privateDataBox.innerHTML = '';
+          currentSessionOwnerId = null;
           loginState.textContent = 'SIGNED OUT';
           if (showStatus) loginStatus.textContent = '비로그인 요청이 서버에서 거절되었습니다.';
           addCard3Log('비공개 요청', `${response.status} ${data.error || 'DENIED'} · 서버 거절`, 'bad');
@@ -1924,6 +2014,7 @@
         }
 
         loginEvidence.private = '200 OK · 유효한 세션 확인 후 공개';
+        currentSessionOwnerId = data.ownerId || currentSessionOwnerId;
         loginEvidence.session = data.session || 'task8_session=••••••••';
         loginState.textContent = 'SIGNED IN';
         privateDataBox.innerHTML = (data.items || []).map((item) => `
@@ -1951,6 +2042,7 @@
           headers: { 'Accept': 'application/json' }
         });
         lastSuccessfulLoginRequest = null;
+        currentSessionOwnerId = null;
         replayTestButton.disabled = true;
         loginEvidence.session = '-';
         privateDataBox.innerHTML = '';
@@ -1964,6 +2056,45 @@
       }
     }
 
+    function addCard5Result(title, detail, kind = '') {
+      if (card5Result.querySelector('.card5-result-row')?.textContent.includes('아직 계정 간')) card5Result.innerHTML = '';
+      const row = document.createElement('div');
+      row.className = `card5-result-row ${kind}`.trim();
+      row.innerHTML = `<strong>${escapeHTML(title)}</strong><br>${escapeHTML(detail)}`;
+      card5Result.prepend(row);
+    }
+
+    async function card5CrossAccountTest() {
+      if (!currentSessionOwnerId) {
+        card5Status.textContent = '먼저 선택한 계정으로 로그인해 주세요.';
+        return;
+      }
+      const target = otherAccountId(currentSessionOwnerId);
+      const response = await fetch(`/api/private?mode=cross&owner_id=${encodeURIComponent(target)}`, { credentials:'same-origin', cache:'no-store', headers:{'Accept':'application/json'} });
+      const data = await response.json();
+      const passed = response.status === 403 && data.error === 'CROSS_ACCOUNT_ACCESS_DENIED';
+      const detail = `${currentSessionOwnerId} → ${target} · ${response.status} ${data.error || ''} · 상대 자료 수 ${data.targetCountBefore ?? '?'} → ${data.targetCountAfter ?? '?'} · 반환 ${data.targetDataReturned ?? '?'}건`;
+      addCard5Result('교차 계정 접근', detail, passed ? 'good' : 'bad');
+      card5Status.textContent = passed ? '다른 계정의 비공개 자료 접근이 서버에서 거절되었습니다.' : '교차 계정 접근 결과를 확인해 주세요.';
+    }
+
+    async function card5TamperOwnerTest() {
+      if (!currentSessionOwnerId) {
+        card5Status.textContent = '먼저 선택한 계정으로 로그인해 주세요.';
+        return;
+      }
+      const target = otherAccountId(currentSessionOwnerId);
+      const response = await fetch(`/api/private?owner_id=${encodeURIComponent(target)}`, { credentials:'same-origin', cache:'no-store', headers:{'Accept':'application/json'} });
+      const data = await response.json();
+      const passed = response.ok && data.ownerId === currentSessionOwnerId && data.ignoredRequestedOwnerId === target;
+      const detail = `URL owner_id=${target} 전송 · 실제 반환 owner_id=${data.ownerId || '-'} · ${data.count ?? 0}건 · 세션 계정 자료만 반환`;
+      addCard5Result('계정 ID 변조', detail, passed ? 'good' : 'bad');
+      card5Status.textContent = passed ? '조작한 계정 ID는 무시되고 현재 로그인한 계정의 자료만 반환되었습니다.' : '계정 ID 변조 테스트 결과를 확인해 주세요.';
+    }
+
+    card5CrossButton.addEventListener('click', card5CrossAccountTest);
+    card5TamperButton.addEventListener('click', card5TamperOwnerTest);
+
     loginButton.addEventListener('click', () => performLogin({ authMode: 'local' }));
     remoteLoginButton.addEventListener('click', requestPassStyleLogin);
     linkPhoneButton.addEventListener('click', linkThisPhoneForLoginPush);
@@ -1972,6 +2103,20 @@
     replayTestButton.addEventListener('click', replayLastLogin);
     privateTestButton.addEventListener('click', () => checkPrivateAccess(true));
     logoutButton.addEventListener('click', logoutCard3);
+    accountButtons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const next = button.dataset.accountId;
+        if (!ACCOUNT_META[next] || next === selectedAccountId) return;
+        if (currentSessionOwnerId) await logoutCard3();
+        selectedAccountId = next;
+        localStorage.setItem('task8_selected_account', selectedAccountId);
+        renderSelectedAccount();
+        passkeyName.value = '';
+        card5Status.textContent = `${ACCOUNT_META[selectedAccountId].label} 계정이 선택되었습니다. 패스키 등록 또는 로그인을 진행하세요.`;
+        await loadPasskeys();
+      });
+    });
+    renderSelectedAccount();
 
 
         const authStatus = document.getElementById('auth-status');
@@ -2137,7 +2282,7 @@
 
     async function loadPasskeys() {
       try {
-        const response = await fetch('/api/passkey/list', {
+        const response = await fetch(`/api/passkey/list?accountId=${encodeURIComponent(selectedAccountId)}`, {
           headers: { 'Accept': 'application/json' },
           credentials: 'same-origin',
           cache: 'no-store'
@@ -2296,7 +2441,8 @@
           body: JSON.stringify({
             name,
             authenticatorType: authType,
-            testMode
+            testMode,
+            accountId: selectedAccountId
           })
         });
 
@@ -2410,11 +2556,19 @@
       setRegistrationControlsDisabled(true);
     }
 
-    renderEvidence();
-    renderLoginEvidence();
-    checkPrivateAccess(false);
-    inspectCurrentDevice();
-    loadPasskeys();
+    async function initializePrivateArea() {
+      renderEvidence();
+      renderLoginEvidence();
+      await checkPrivateAccess(false);
+      if (currentSessionOwnerId && currentSessionOwnerId !== selectedAccountId) {
+        selectedAccountId = currentSessionOwnerId;
+        localStorage.setItem('task8_selected_account', selectedAccountId);
+        renderSelectedAccount();
+      }
+      await inspectCurrentDevice();
+      await loadPasskeys();
+    }
+    initializePrivateArea();
   </script>
 </body>
 </html>

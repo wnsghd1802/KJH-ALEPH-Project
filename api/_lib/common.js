@@ -16,12 +16,35 @@ export function getDB() {
   return client;
 }
 
-export const OWNER_ID = 'portfolio-owner';
+export const ACCOUNTS = Object.freeze({
+  'portfolio-owner': Object.freeze({ id: 'portfolio-owner', displayName: 'Portfolio Owner' }),
+  'portfolio-reviewer': Object.freeze({ id: 'portfolio-reviewer', displayName: 'Portfolio Reviewer' }),
+});
+export const DEFAULT_OWNER_ID = 'portfolio-owner';
 export const RP_NAME = 'Network Security Profile';
 export const CHALLENGE_TTL_MS = 5 * 60 * 1000;
 export const REMOTE_LOGIN_TTL_MS = 2 * 60 * 1000;
 export const SESSION_COOKIE = 'task8_session';
 export const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+
+export function normalizeOwnerId(value) {
+  const id = String(value || '').trim();
+  return ACCOUNTS[id] ? id : null;
+}
+
+export function requireOwnerId(value) {
+  const ownerId = normalizeOwnerId(value);
+  if (!ownerId) throw new Error('지원하지 않는 계정입니다.');
+  return ownerId;
+}
+
+export function getAccount(ownerId) {
+  return ACCOUNTS[ownerId] || null;
+}
+
+export function getOtherOwnerId(ownerId) {
+  return ownerId === 'portfolio-owner' ? 'portfolio-reviewer' : 'portfolio-owner';
+}
 
 export function getWebAuthnConfig(req) {
   const forwardedHost = req.headers['x-forwarded-host'];
@@ -39,8 +62,8 @@ export function noStore(res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 }
 
-export function jsonError(res, status, error, message) {
-  return res.status(status).json({ ok: false, error, message });
+export function jsonError(res, status, error, message, extra = {}) {
+  return res.status(status).json({ ok: false, error, message, ...extra });
 }
 
 export function createSessionToken() {
@@ -82,7 +105,6 @@ export function clearSessionCookie(req, res) {
   res.setHeader('Set-Cookie', parts.join('; '));
 }
 
-
 export async function getActiveSession(req, db = getDB()) {
   const token = readCookie(req, SESSION_COOKIE);
   if (!token) return null;
@@ -90,15 +112,15 @@ export async function getActiveSession(req, db = getDB()) {
   const now = new Date().toISOString();
   const { data: session, error } = await db
     .from('auth_sessions')
-    .select('id, expires_at, revoked_at')
-    .eq('owner_id', OWNER_ID)
+    .select('id, owner_id, expires_at, revoked_at')
     .eq('token_hash', hashSessionToken(token))
     .is('revoked_at', null)
     .gt('expires_at', now)
     .maybeSingle();
 
   if (error) throw error;
-  return session || null;
+  if (!session || !normalizeOwnerId(session.owner_id)) return null;
+  return session;
 }
 
 export function createOpaqueSecret(bytes = 32) {
