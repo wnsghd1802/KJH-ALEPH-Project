@@ -1154,6 +1154,65 @@
 
       section { padding: 75px 0; }
     }
+
+
+    /* Final user-facing UI */
+    .dev-only { display: none !important; }
+
+    .result-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(3, 7, 18, .72);
+      backdrop-filter: blur(8px);
+    }
+    .result-modal.open { display: flex; }
+    .result-dialog {
+      width: min(100%, 430px);
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(24,35,59,.98), rgba(12,19,34,.99));
+      box-shadow: 0 30px 90px rgba(0,0,0,.46);
+      padding: 28px;
+    }
+    .result-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      font-size: 1.55rem;
+      background: rgba(94,234,212,.10);
+      border: 1px solid rgba(94,234,212,.25);
+    }
+    .result-modal.bad .result-icon {
+      background: rgba(248,113,113,.10);
+      border-color: rgba(248,113,113,.26);
+    }
+    .result-modal.info .result-icon {
+      background: rgba(96,165,250,.10);
+      border-color: rgba(96,165,250,.26);
+    }
+    .result-dialog h3 { margin: 0 0 9px; font-size: 1.35rem; }
+    .result-dialog p { color: var(--muted); margin: 0; white-space: pre-line; }
+    .result-close {
+      margin-top: 22px;
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 16px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #07111d;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .result-modal.bad .result-close { background: #25324b; color: var(--text); }
+
   </style>
   <script src="https://unpkg.com/@simplewebauthn/browser@14.0.0/dist/bundle/index.umd.min.js"></script>
 </head>
@@ -1363,57 +1422,54 @@
 
     <section id="private">
       <div class="container">
-        <div class="section-label">06 / Private · Card 3–5</div>
+        <div class="section-label">06 / Private</div>
         <h2>나만 보기</h2>
 
         <div class="account-switcher" id="account-switcher">
           <div class="account-switcher-head">
-            <strong>Card 5 테스트 계정</strong>
+            <strong>계정 선택</strong>
             <span id="selected-account-text">Portfolio Owner 선택됨</span>
           </div>
-          <p style="margin:0 0 12px;color:var(--muted);font-size:.84rem;">두 계정과 비공개 자료는 인증·접근제어 검증을 위한 과제용 예시 데이터입니다.</p>
+          <p style="margin:0 0 12px;color:var(--muted);font-size:.84rem;">계정을 선택한 뒤 패스키로 로그인하면 해당 계정의 비공개 자료를 확인할 수 있습니다.</p>
           <div class="account-buttons">
             <button class="account-button active" type="button" data-account-id="portfolio-owner">
               Portfolio Owner
-              <small>portfolio-owner · 기존 계정</small>
+              <small>portfolio-owner · 기본 계정</small>
             </button>
             <button class="account-button" type="button" data-account-id="portfolio-reviewer">
               Portfolio Reviewer
-              <small>portfolio-reviewer · 두 번째 테스트 계정</small>
+              <small>portfolio-reviewer · 검토 계정</small>
             </button>
           </div>
         </div>
 
         <div class="card3-login">
           <div class="private-panel" aria-labelledby="login-title">
-            <div class="lock-badge">🔑 PASSKEY LOGIN · CARD 3</div>
+            <div class="lock-badge">🔑 패스키 로그인</div>
             <div class="card3-lead">
               <div>
                 <h3 id="login-title">패스키로 로그인해 비공개 자료를 엽니다.</h3>
                 <p>
-                  로그인할 때마다 서버가 새 challenge를 만들고, 패스키가 개인키로 서명합니다.
-                  서버는 Card 2에서 저장한 공개키로 서명이 맞는지 확인한 뒤에만 세션을 발급합니다.
-                  PC에서는 “휴대폰에 로그인 요청 보내기”를 누르면 연결된 휴대폰에 알림이 뜨고,
-                  휴대폰에서 패스키 본인 인증을 승인하면 PC 세션이 자동으로 열립니다.
+                  등록된 패스키로 안전하게 로그인할 수 있습니다. PC에서는 연결된 휴대폰으로 로그인 요청을 보내고, 휴대폰에서 본인 인증을 승인하면 자동으로 로그인됩니다.
                 </p>
               </div>
-              <span class="card3-state" id="login-state">SIGNED OUT</span>
+              <span class="card3-state" id="login-state">로그아웃</span>
             </div>
 
             <div class="card3-actions">
               <button class="card3-action primary" id="passkey-login" type="button">이 기기에서 패스키 로그인</button>
               <button class="card3-action" id="remote-passkey-login" type="button">휴대폰으로 로그인</button>
               <button class="card3-action" id="link-phone-push" type="button">이 휴대폰을 로그인 알림 기기로 연결</button>
-              <button class="card3-action" id="challenge-twice-test" type="button">Challenge 2회 발급 테스트</button>
-              <button class="card3-action" id="bad-signature-test" type="button">잘못된 서명 테스트</button>
-              <button class="card3-action" id="replay-test" type="button" disabled>같은 질문 재사용 테스트</button>
-              <button class="card3-action" id="private-test" type="button">비공개 요청 확인</button>
+              <button class="card3-action dev-only" id="challenge-twice-test" type="button">Challenge 2회 발급 테스트</button>
+              <button class="card3-action dev-only" id="bad-signature-test" type="button">잘못된 서명 테스트</button>
+              <button class="card3-action dev-only" id="replay-test" type="button" disabled>같은 질문 재사용 테스트</button>
+              <button class="card3-action dev-only" id="private-test" type="button">비공개 요청 확인</button>
               <button class="card3-action" id="logout-button" type="button">로그아웃</button>
             </div>
 
-            <div class="auth-status" id="login-status" role="status" aria-live="polite">로그인 상태를 확인 중...</div>
+            <div class="auth-status dev-only" id="login-status" role="status" aria-live="polite">로그인 상태를 확인 중...</div>
 
-            <div class="login-evidence" id="login-evidence" aria-live="polite">
+            <div class="login-evidence dev-only" id="login-evidence" aria-live="polite">
               <div><strong>REQUEST</strong> -</div>
               <div><strong>CHALLENGE #1</strong> -</div>
               <div><strong>CHALLENGE #2</strong> -</div>
@@ -1422,7 +1478,7 @@
               <div><strong>PRIVATE</strong> -</div>
             </div>
 
-            <div class="card3-test-log" id="card3-test-log">
+            <div class="card3-test-log dev-only" id="card3-test-log">
               <div class="card3-log-row"><b>검증 기록</b> 아직 Card 3 테스트를 실행하지 않았습니다.</div>
             </div>
 
@@ -1430,15 +1486,14 @@
           </div>
         </div>
 
-        <div class="card2-divider">Card 4 · 패스키 복구 / 관리</div>
+        <div class="card2-divider">패스키 관리</div>
 
         <div class="private-wrap">
           <div class="private-panel" aria-labelledby="private-title">
-            <div class="lock-badge">🔐 PASSKEY REGISTRATION</div>
+            <div class="lock-badge">🔐 패스키 관리</div>
             <h3 id="private-title">패스키를 추가로 등록하고 복구 수단을 관리합니다.</h3>
             <p>
-              첫 패스키 이후에는 로그인된 상태에서 새 패스키를 추가할 수 있습니다.
-              서버는 기존 credential을 제외 목록으로 보내 중복 등록을 막고, 공개키와 식별 정보만 저장합니다.
+              로그인된 상태에서 새 패스키를 추가하거나 기존 패스키를 관리할 수 있습니다. 서버에는 공개키와 패스키 식별 정보만 저장됩니다.
             </p>
 
             <div class="device-registration">
@@ -1469,7 +1524,7 @@
                 <div class="register-primary-head">
                   <strong>📱🖥️ 이 기기에 새 패스키 추가</strong>
                   <span>
-                    휴대폰에서는 선택한 패스키 제공자에 새 credential이 만들어집니다.
+                    휴대폰에서는 선택한 패스키 제공자에 새 패스키가 만들어집니다.
                     두 번째 패스키를 Samsung Pass에 만들려면 등록 전에 휴대폰에서 Samsung Pass를 사용할 패스키 제공자로 선택해 주세요.
                   </span>
                 </div>
@@ -1488,7 +1543,7 @@
                     이 기기에 새 패스키 추가
                   </button>
                   <div class="card4-note">
-                    Card 4 권장 테스트: 기존 Google 비밀번호 관리자 패스키로 로그인 → 휴대폰의 패스키 제공자를 Samsung Pass로 선택 → 이름을 <b>Samsung Pass</b>로 입력 → 새 패스키 추가.
+                    여러 기기나 패스키 제공자를 등록해 두면 한 패스키를 사용할 수 없을 때 다른 패스키로 로그인할 수 있습니다.
                   </div>
                 </div>
               </div>
@@ -1510,11 +1565,11 @@
               </div>
             </div>
 
-            <div class="auth-status" id="auth-status" role="status" aria-live="polite">
+            <div class="auth-status dev-only" id="auth-status" role="status" aria-live="polite">
               패스키 지원 여부 확인 중...
             </div>
 
-            <div class="registration-evidence" id="registration-evidence" aria-live="polite">
+            <div class="registration-evidence dev-only" id="registration-evidence" aria-live="polite">
               <div><strong>METHOD</strong> -</div>
               <div><strong>WEBAUTHN</strong> -</div>
               <div><strong>REQUEST</strong> 아직 등록 요청을 보내지 않았습니다.</div>
@@ -1523,7 +1578,7 @@
               <div><strong>SERVER SAVE</strong> -</div>
             </div>
 
-            <div class="cancel-test-box">
+            <div class="cancel-test-box dev-only">
               <strong>Card 2 검증 도구</strong>
               <p>
                 첫 패스키가 이미 등록된 상태에서도 새 challenge를 한 번 발급해
@@ -1549,10 +1604,10 @@
           </aside>
         </div>
 
-        <div class="card2-divider">Card 5 · 계정 분리 / 접근 제어 검증</div>
-        <div class="card3-login">
+        <div class="card2-divider dev-only">접근 제어 검증</div>
+        <div class="card3-login dev-only">
           <div class="private-panel" aria-labelledby="card5-title">
-            <div class="lock-badge">🛡️ ACCESS CONTROL · CARD 5</div>
+            <div class="lock-badge">🛡️ ACCESS CONTROL</div>
             <h3 id="card5-title">로그인한 계정의 자료만 서버에서 반환합니다.</h3>
             <p>
               선택한 계정으로 로그인한 뒤 반대 계정의 비공개 자료 접근을 시도합니다.
@@ -1583,6 +1638,17 @@
     </section>
   </main>
 
+
+
+  <div class="result-modal" id="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title" aria-describedby="result-message">
+    <div class="result-dialog">
+      <div class="result-icon" id="result-icon">✓</div>
+      <h3 id="result-title">완료</h3>
+      <p id="result-message"></p>
+      <button class="result-close" id="result-close" type="button">확인</button>
+    </div>
+  </div>
+
   <footer>
     Network & Security Profile · Personal Portfolio
   </footer>
@@ -1595,6 +1661,34 @@
       });
     });
 
+
+
+    const resultModal = document.getElementById('result-modal');
+    const resultIcon = document.getElementById('result-icon');
+    const resultTitle = document.getElementById('result-title');
+    const resultMessage = document.getElementById('result-message');
+    const resultClose = document.getElementById('result-close');
+
+    function showResultModal(title, message, type = 'good') {
+      if (!resultModal) return;
+      resultModal.className = `result-modal open ${type}`;
+      resultIcon.textContent = type === 'bad' ? '!' : type === 'info' ? 'i' : '✓';
+      resultTitle.textContent = title;
+      resultMessage.textContent = message || '';
+      resultClose.focus();
+    }
+
+    function closeResultModal() {
+      resultModal?.classList.remove('open');
+    }
+
+    resultClose?.addEventListener('click', closeResultModal);
+    resultModal?.addEventListener('click', (event) => {
+      if (event.target === resultModal) closeResultModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && resultModal?.classList.contains('open')) closeResultModal();
+    });
 
     // Task 8 / Card 5 - account selection
     const ACCOUNT_META = {
@@ -1719,6 +1813,7 @@
     async function performLogin({ badSignature = false, authMode = 'local' } = {}) {
       if (!window.PublicKeyCredential || !window.SimpleWebAuthnBrowser) {
         loginStatus.textContent = '이 브라우저에서는 패스키 로그인을 사용할 수 없습니다.';
+        showResultModal('로그인할 수 없습니다', '이 브라우저에서는 패스키 로그인을 지원하지 않습니다.', 'bad');
         return;
       }
 
@@ -1776,8 +1871,9 @@
         loginEvidence.verify = 'VERIFIED · 저장된 공개키로 서명 확인 성공';
         loginEvidence.session = `${data.session?.type || 'HttpOnly cookie'} · ${data.session?.display || 'task8_session=••••••••'}`;
         currentSessionOwnerId = data.ownerId || selectedAccountId;
-        loginState.textContent = 'SIGNED IN';
+        loginState.textContent = '로그인됨';
         loginStatus.textContent = '패스키 로그인 성공 · 비공개 자료 접근이 허용되었습니다.';
+        showResultModal('로그인 성공', '등록된 패스키의 서명이 정상적으로 확인되었습니다.\n비공개 자료를 확인할 수 있습니다.', 'good');
         addCard3Log('서명 성공 요청', '200 VERIFIED · 공개키 검증 후 HttpOnly 세션 발급', 'good');
         renderLoginEvidence();
         await checkPrivateAccess(false);
@@ -1785,9 +1881,11 @@
         const isCancel = error && (error.name === 'NotAllowedError' || error.name === 'AbortError');
         if (isCancel) {
           loginStatus.textContent = '패스키 로그인을 취소했습니다.';
+          showResultModal('로그인 취소', '패스키 인증이 취소되었습니다.', 'info');
           addCard3Log('로그인 취소', '사용자가 WebAuthn 인증 창을 닫았습니다.');
         } else {
           loginStatus.textContent = error.message || '패스키 로그인 중 오류가 발생했습니다.';
+          showResultModal('로그인 실패', loginStatus.textContent, 'bad');
         }
       } finally {
         setCard3Busy(false);
@@ -1847,9 +1945,11 @@
         }
 
         loginStatus.textContent = '이 휴대폰 연결 완료 · 이제 PC에서 로그인 요청을 보내면 휴대폰 알림이 뜹니다.';
+        showResultModal('휴대폰 연결 완료', '이 휴대폰에서 PC 로그인 승인 알림을 받을 수 있습니다.', 'good');
         addCard3Log('휴대폰 알림 연결', 'Web Push 구독 저장 완료 · 휴대폰 로그인 준비됨', 'good');
       } catch (error) {
         loginStatus.textContent = error.message || '휴대폰 알림 연결 중 오류가 발생했습니다.';
+        showResultModal('휴대폰 연결 실패', loginStatus.textContent, 'bad');
       } finally {
         setCard3Busy(false);
       }
@@ -1886,6 +1986,7 @@
         loginEvidence.challenge1 = data.challenge || '-';
         loginEvidence.verify = 'PUSH SENT · 휴대폰 패스키 승인 대기 중';
         loginStatus.textContent = '휴대폰에 로그인 요청 알림을 보냈습니다. 알림을 눌러 패스키 본인 인증 후 승인해 주세요.';
+        showResultModal('휴대폰에 요청을 보냈습니다', '연결된 휴대폰에서 알림을 열고 패스키로 본인 인증해 주세요.', 'info');
         addCard3Log('휴대폰 로그인 요청', `휴대폰 알림 ${data.delivered || 1}대 전송 · 승인 대기`, 'good');
         renderLoginEvidence();
 
@@ -1913,8 +2014,9 @@
             loginEvidence.verify = 'VERIFIED · 휴대폰에서 저장된 공개키 검증 성공';
             loginEvidence.session = `${completeResult.data.session?.type || 'HttpOnly cookie'} · ${completeResult.data.session?.display || 'task8_session=••••••••'}`;
             currentSessionOwnerId = completeResult.data.ownerId || selectedAccountId;
-            loginState.textContent = 'SIGNED IN';
+            loginState.textContent = '로그인됨';
             loginStatus.textContent = '휴대폰 승인 완료 · PC 로그인이 자동으로 완료되었습니다.';
+            showResultModal('로그인 성공', '휴대폰에서 본인 인증이 완료되어 이 PC에 로그인했습니다.', 'good');
             addCard3Log('휴대폰 승인 로그인', '200 VERIFIED · PC HttpOnly 세션 발급', 'good');
             renderLoginEvidence();
             await checkPrivateAccess(false);
@@ -1932,6 +2034,7 @@
       } catch (error) {
         loginEvidence.verify = 'REMOTE LOGIN FAILED';
         loginStatus.textContent = error.message || '휴대폰 승인 로그인 중 오류가 발생했습니다.';
+        showResultModal('로그인 실패', loginStatus.textContent, 'bad');
         addCard3Log('휴대폰 로그인', loginStatus.textContent, 'bad');
         renderLoginEvidence();
       } finally {
@@ -2006,8 +2109,8 @@
           loginEvidence.private = `${response.status} ${data.error || 'DENIED'} · 로그인 없이는 거절`;
           privateDataBox.innerHTML = '';
           currentSessionOwnerId = null;
-          loginState.textContent = 'SIGNED OUT';
-          if (showStatus) loginStatus.textContent = '비로그인 요청이 서버에서 거절되었습니다.';
+          loginState.textContent = '로그아웃';
+          if (showStatus) { loginStatus.textContent = '비로그인 요청이 서버에서 거절되었습니다.'; showResultModal('로그인이 필요합니다', '비공개 자료는 패스키 인증 후 확인할 수 있습니다.', 'bad'); }
           addCard3Log('비공개 요청', `${response.status} ${data.error || 'DENIED'} · 서버 거절`, 'bad');
           renderLoginEvidence();
           return false;
@@ -2016,14 +2119,14 @@
         loginEvidence.private = '200 OK · 유효한 세션 확인 후 공개';
         currentSessionOwnerId = data.ownerId || currentSessionOwnerId;
         loginEvidence.session = data.session || 'task8_session=••••••••';
-        loginState.textContent = 'SIGNED IN';
+        loginState.textContent = '로그인됨';
         privateDataBox.innerHTML = (data.items || []).map((item) => `
           <div class="private-data-item">
             <strong>${escapeHTML(item.title)}</strong>
             <span>${escapeHTML(item.value)}</span>
           </div>
         `).join('');
-        if (showStatus) loginStatus.textContent = '유효한 세션을 확인해 비공개 자료를 불러왔습니다.';
+        if (showStatus) { loginStatus.textContent = '유효한 세션을 확인해 비공개 자료를 불러왔습니다.'; showResultModal('비공개 자료를 불러왔습니다', '현재 로그인한 계정의 자료만 표시됩니다.', 'good'); }
         addCard3Log('비공개 요청', '200 OK · 세션 검증 후 공개', 'good');
         renderLoginEvidence();
         return true;
@@ -2046,8 +2149,9 @@
         replayTestButton.disabled = true;
         loginEvidence.session = '-';
         privateDataBox.innerHTML = '';
-        loginState.textContent = 'SIGNED OUT';
+        loginState.textContent = '로그아웃';
         loginStatus.textContent = '로그아웃했습니다. 세션 쿠키가 제거되었습니다.';
+        showResultModal('로그아웃 완료', '현재 기기의 로그인 세션을 종료했습니다.', 'good');
         addCard3Log('로그아웃', '세션 폐기 및 쿠키 제거');
         renderLoginEvidence();
         await checkPrivateAccess(false);
@@ -2307,7 +2411,7 @@
 
         if (registeredPasskeyCount === 1) {
           recoveryStatus.classList.add('warn');
-          recoveryStatus.innerHTML = '<b>등록된 패스키 1개</b><br>이 패스키를 잃으면 로그인 수단이 없어집니다. Card 4 테스트를 위해 두 번째 패스키를 추가해 주세요.';
+          recoveryStatus.innerHTML = '<b>등록된 패스키 1개</b><br>이 패스키를 잃으면 로그인 수단이 없어집니다. 복구 수단을 위해 두 번째 패스키 등록을 권장합니다.';
         } else {
           recoveryStatus.classList.add('good');
           recoveryStatus.innerHTML = `<b>등록된 패스키 ${registeredPasskeyCount}개</b><br>하나를 삭제하거나 사용할 수 없게 되어도 다른 패스키로 로그인할 수 있습니다.`;
@@ -2367,15 +2471,16 @@
         const data = await response.json();
         if (!response.ok) {
           if (response.status === 401) {
-            throw new Error('패스키 삭제는 먼저 위의 Card 3에서 패스키 로그인을 완료한 뒤 진행해 주세요.');
+            throw new Error('패스키를 삭제하려면 먼저 로그인해 주세요.');
           }
           throw new Error(data.message || `패스키 삭제 실패 (${response.status})`);
         }
 
         authStatus.textContent = data.message || `${passkeyLabel} 패스키를 삭제했습니다.`;
+        showResultModal('패스키 삭제 완료', authStatus.textContent, 'good');
         await loadPasskeys();
         if (data.noPasskeysLeft) {
-          loginState.textContent = 'SIGNED OUT';
+          loginState.textContent = '로그아웃';
           loginEvidence.session = '-';
           privateDataBox.innerHTML = '';
           renderLoginEvidence();
@@ -2383,6 +2488,7 @@
         }
       } catch (error) {
         authStatus.textContent = error.message || '패스키 삭제 중 오류가 발생했습니다.';
+        showResultModal('패스키 삭제 실패', authStatus.textContent, 'bad');
       }
     }
 
@@ -2406,12 +2512,14 @@
       const name = testMode ? 'Card2-Cancel-Test' : passkeyName.value.trim();
       if (!name) {
         authStatus.textContent = '패스키 이름을 먼저 입력해 주세요.';
+        showResultModal('이름을 입력해 주세요', '패스키를 구분할 수 있는 이름을 먼저 입력해 주세요.', 'info');
         passkeyName.focus();
         return;
       }
 
       if (!window.PublicKeyCredential || !window.SimpleWebAuthnBrowser) {
         authStatus.textContent = '이 브라우저에서는 패스키 등록을 사용할 수 없습니다.';
+        showResultModal('등록할 수 없습니다', '이 브라우저에서는 패스키 등록을 지원하지 않습니다.', 'bad');
         return;
       }
 
@@ -2502,6 +2610,7 @@
         renderEvidence();
 
         authStatus.textContent = `패스키 등록 완료 · 현재 서버 등록 ${verifyData.passkeyCount || '?'}개`;
+        showResultModal('패스키 등록 완료', `${verifyData.passkey.name} 패스키가 등록되었습니다.`, 'good');
         passkeyName.value = '';
         await loadPasskeys();
       } catch (error) {
@@ -2516,10 +2625,12 @@
           authStatus.textContent = testMode
             ? '취소 테스트 성공 · 서버에 새 패스키가 저장되지 않았습니다.'
             : '패스키 등록을 취소했습니다. 서버에 패스키가 저장되지 않았습니다.';
+          if (!testMode) showResultModal('등록 취소', '패스키 등록이 취소되었습니다. 서버에는 새 패스키가 저장되지 않았습니다.', 'info');
           evidence.verify = 'CANCELLED';
           evidence.save = '없음';
         } else {
           authStatus.textContent = error.message || '패스키 등록 중 오류가 발생했습니다.';
+          showResultModal('패스키 등록 실패', authStatus.textContent, 'bad');
           evidence.verify = 'FAILED';
           evidence.save = '없음';
         }
