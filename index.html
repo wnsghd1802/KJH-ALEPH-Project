@@ -955,21 +955,32 @@
     .card3-login { margin: 0 0 28px; }
     .card3-login .private-panel { padding: 30px; }
     .card3-lead {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 18px;
-      align-items: start;
+      display: block;
       margin-bottom: 18px;
     }
     .card3-lead p { margin: 0; }
     .card3-state {
-      padding: 7px 10px;
-      border: 1px solid rgba(96,165,250,.26);
-      border-radius: 999px;
-      background: rgba(96,165,250,.07);
-      color: #bfdbfe;
-      font: 800 .72rem ui-monospace, monospace;
-      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      color: #94a3b8;
+      font-size: .8rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .card3-state::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      flex: 0 0 7px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+    .card3-state.signed-in { color: #bbf7d0; }
+    .card3-state.signed-in::before {
+      background: #4ade80;
+      box-shadow: 0 0 10px rgba(74,222,128,.55);
     }
     .card3-actions {
       display: grid;
@@ -1141,7 +1152,6 @@
         grid-template-columns: 1fr;
       }
 
-      .card3-lead { grid-template-columns: 1fr; }
       .card3-action.primary { grid-column: auto; }
       .card3-test-log { grid-template-columns: 1fr; }
 
@@ -1452,8 +1462,8 @@
                 <p>
                   등록된 패스키 또는 연결된 휴대폰으로 안전하게 로그인할 수 있습니다.
                 </p>
+                <span class="card3-state" id="login-state">현재 상태: 로그아웃</span>
               </div>
-              <span class="card3-state" id="login-state">로그아웃</span>
             </div>
 
             <div class="card3-actions">
@@ -1732,6 +1742,17 @@
     let lastSuccessfulLoginRequest = null;
     let card3LogInitialized = false;
 
+    function setLoginState(loggedIn, ownerId = currentSessionOwnerId || selectedAccountId) {
+      if (!loginState) return;
+      loginState.classList.toggle('signed-in', loggedIn);
+      if (loggedIn) {
+        const label = ACCOUNT_META[ownerId]?.label || ownerId || '현재 계정';
+        loginState.textContent = `현재 상태: 로그인됨 · ${label}`;
+      } else {
+        loginState.textContent = '현재 상태: 로그아웃';
+      }
+    }
+
     const loginEvidence = {
       request: '-',
       challenge1: '-',
@@ -1871,7 +1892,7 @@
         loginEvidence.verify = 'VERIFIED · 저장된 공개키로 서명 확인 성공';
         loginEvidence.session = `${data.session?.type || 'HttpOnly cookie'} · ${data.session?.display || 'task8_session=••••••••'}`;
         currentSessionOwnerId = data.ownerId || selectedAccountId;
-        loginState.textContent = '로그인됨';
+        setLoginState(true);
         loginStatus.textContent = '패스키 로그인 성공 · 비공개 자료 접근이 허용되었습니다.';
         showResultModal('로그인 성공', '등록된 패스키의 서명이 정상적으로 확인되었습니다.\n비공개 자료를 확인할 수 있습니다.', 'good');
         addCard3Log('서명 성공 요청', '200 VERIFIED · 공개키 검증 후 HttpOnly 세션 발급', 'good');
@@ -2014,7 +2035,7 @@
             loginEvidence.verify = 'VERIFIED · 휴대폰에서 저장된 공개키 검증 성공';
             loginEvidence.session = `${completeResult.data.session?.type || 'HttpOnly cookie'} · ${completeResult.data.session?.display || 'task8_session=••••••••'}`;
             currentSessionOwnerId = completeResult.data.ownerId || selectedAccountId;
-            loginState.textContent = '로그인됨';
+            setLoginState(true);
             loginStatus.textContent = '휴대폰 승인 완료 · PC 로그인이 자동으로 완료되었습니다.';
             showResultModal('로그인 성공', '휴대폰에서 본인 인증이 완료되어 이 PC에 로그인했습니다.', 'good');
             addCard3Log('휴대폰 승인 로그인', '200 VERIFIED · PC HttpOnly 세션 발급', 'good');
@@ -2109,7 +2130,7 @@
           loginEvidence.private = `${response.status} ${data.error || 'DENIED'} · 로그인 없이는 거절`;
           privateDataBox.innerHTML = '';
           currentSessionOwnerId = null;
-          loginState.textContent = '로그아웃';
+          setLoginState(false);
           if (showStatus) { loginStatus.textContent = '비로그인 요청이 서버에서 거절되었습니다.'; showResultModal('로그인이 필요합니다', '비공개 자료는 패스키 인증 후 확인할 수 있습니다.', 'bad'); }
           addCard3Log('비공개 요청', `${response.status} ${data.error || 'DENIED'} · 서버 거절`, 'bad');
           renderLoginEvidence();
@@ -2119,7 +2140,7 @@
         loginEvidence.private = '200 OK · 유효한 세션 확인 후 공개';
         currentSessionOwnerId = data.ownerId || currentSessionOwnerId;
         loginEvidence.session = data.session || 'task8_session=••••••••';
-        loginState.textContent = '로그인됨';
+        setLoginState(true);
         privateDataBox.innerHTML = (data.items || []).map((item) => `
           <div class="private-data-item">
             <strong>${escapeHTML(item.title)}</strong>
@@ -2149,7 +2170,7 @@
         replayTestButton.disabled = true;
         loginEvidence.session = '-';
         privateDataBox.innerHTML = '';
-        loginState.textContent = '로그아웃';
+        setLoginState(false);
         loginStatus.textContent = '로그아웃했습니다. 세션 쿠키가 제거되었습니다.';
         showResultModal('로그아웃 완료', '현재 기기의 로그인 세션을 종료했습니다.', 'good');
         addCard3Log('로그아웃', '세션 폐기 및 쿠키 제거');
@@ -2480,7 +2501,7 @@
         showResultModal('패스키 삭제 완료', authStatus.textContent, 'good');
         await loadPasskeys();
         if (data.noPasskeysLeft) {
-          loginState.textContent = '로그아웃';
+          setLoginState(false);
           loginEvidence.session = '-';
           privateDataBox.innerHTML = '';
           renderLoginEvidence();
