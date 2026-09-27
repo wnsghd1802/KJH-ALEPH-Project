@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       user_agent: String(req.headers['user-agent'] || '').slice(0, 500),
       active: true,
       updated_at: now,
-    }, { onConflict: 'endpoint' });
+    }, { onConflict: 'owner_id,endpoint' });
     if (error) throw error;
 
     return res.status(200).json({ ok: true, ownerId: session.owner_id, message: '이 휴대폰이 현재 계정의 로그인 승인 알림 기기로 연결되었습니다.' });

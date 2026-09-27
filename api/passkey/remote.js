@@ -80,7 +80,7 @@ async function requestAction(req, res) {
     } catch (pushError) {
       const statusCode = Number(pushError?.statusCode || 0);
       if (statusCode === 404 || statusCode === 410) {
-        await db.from('push_subscriptions').update({ active: false, updated_at: new Date().toISOString() }).eq('id', sub.id);
+        await db.from('push_subscriptions').update({ active: false, updated_at: new Date().toISOString() }).eq('endpoint', sub.endpoint);
       }
       console.warn('push delivery failed', statusCode, pushError?.message || pushError);
     }
