@@ -86,7 +86,26 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
 
 @media(min-width:821px){.isometric{width:100%!important;max-width:100%!important}}
 .story-body{max-width:820px;display:grid;gap:18px}.story-body p{font-size:clamp(15px,1.35vw,18px);line-height:2.02;letter-spacing:-.016em;color:#c4d4e8;margin:0;word-break:keep-all}.work-case{margin:38px 0 0;padding:28px 31px;background:linear-gradient(105deg,rgba(19,49,80,.56),rgba(8,23,43,.55));border:1px solid #355f876f;border-radius:14px;max-width:1030px}.work-case h3{font-size:19px;color:#e9f3ff;letter-spacing:-.035em;margin:11px 0 12px}.work-case p{font-size:14px;color:#b8c9df;line-height:1.85;margin:0;word-break:keep-all}.case-foot{display:block;font-size:11px;letter-spacing:.015em;color:#7cb5f5;margin-top:15px}.passkey-account{display:flex;gap:9px;align-items:center;justify-content:space-between;margin:9px 0 14px}.passkey-account label{font-size:11px;color:#96b1d4}.passkey-account select{border:1px solid #426387;background:#101f34;color:#d7e8ff;border-radius:8px;padding:9px 10px;font:inherit;font-size:11px;min-width:0}@media(max-width:820px){.work-case{padding:22px}.story-body p{font-size:15px;line-height:1.92}}
-.account-advanced{margin:5px 0 13px}.account-advanced summary{cursor:pointer;color:#769bc7;font-size:11px;list-style:none}.account-advanced summary:hover{color:#c1ddf8}.account-advanced select{display:block;width:100%;margin-top:8px;background:#0d2039;border:1px solid #365a84;color:#d6eaff;padding:9px;border-radius:7px;font-family:inherit}.sr-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.portfolio-footer a.external{margin-left:0}.portfolio-footer a.to-top{margin-left:auto}</style></head><body>
+.account-advanced{margin:5px 0 13px}.account-advanced summary{cursor:pointer;color:#769bc7;font-size:11px;list-style:none}.account-advanced summary:hover{color:#c1ddf8}.account-advanced select{display:block;width:100%;margin-top:8px;background:#0d2039;border:1px solid #365a84;color:#d6eaff;padding:9px;border-radius:7px;font-family:inherit}.sr-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.portfolio-footer a.external{margin-left:0}.portfolio-footer a.to-top{margin-left:auto}
+/* Submission revision: substantive project work, compact contribution labels and mobile readability. */
+.project-grid-detailed{align-items:stretch;gap:18px}
+.project-grid-detailed .project-card{min-height:0;padding:30px 29px 27px;border-color:rgba(94,145,193,.4);transition:border-color .18s ease,transform .18s ease}
+.project-grid-detailed .project-card:hover{border-color:rgba(114,184,255,.65);transform:translateY(-2px)}
+.project-grid-detailed .project-featured{background:linear-gradient(152deg,#142d49,#0a192c);border-color:rgba(98,163,226,.64)}
+.project-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:9px;width:100%}
+.project-kind{font-size:10px;line-height:1.4;color:#c9dff7;border:1px solid #436d96;background:#19314a;border-radius:999px;padding:5px 9px;white-space:nowrap}
+.project-grid-detailed h3{font-size:20px;margin:20px 0 14px;line-height:1.46}
+.project-grid-detailed .project-lead{flex:initial;font-size:13.5px;line-height:1.85;color:#bfd0e4;min-height:75px}
+.project-details{width:100%;margin:22px 0 0;padding:16px 0 0;border-top:1px solid #38597977;display:flex;flex-direction:column;gap:14px}
+.project-details>div{display:grid;grid-template-columns:61px minmax(0,1fr);gap:10px}
+.project-details dt{font-size:11px;font-weight:750;color:#8bc4ff;line-height:1.6}
+.project-details dd{font-size:12px;line-height:1.77;color:#c5d5e8;margin:0;word-break:keep-all;overflow-wrap:break-word}
+.project-grid-detailed .skill-pills{margin-top:auto;padding-top:23px}
+@media(max-width:1150px) and (min-width:821px){.project-grid-detailed{grid-template-columns:repeat(2,minmax(0,1fr))}.project-grid-detailed .project-card:last-child{grid-column:span 2}.project-grid-detailed .project-card:last-child .project-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.project-grid-detailed .project-card:last-child .project-details>div{display:block}.project-grid-detailed .project-card:last-child .project-details dt{margin-bottom:5px}}
+@media(max-width:820px){.project-grid-detailed .project-card{padding:25px 22px}.project-grid-detailed .project-lead{min-height:0}.project-grid-detailed h3{font-size:19px}.project-details{gap:12px}.project-details>div{grid-template-columns:53px minmax(0,1fr);gap:8px}}
+@media(max-width:350px){.project-grid-detailed .project-card{padding:23px 17px}.project-head{align-items:flex-start}.project-kind{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.project-grid-detailed .project-card{transition:none}.project-grid-detailed .project-card:hover{transform:none}}
+</style></head><body>
 <header class="top" id="home"><div class="brand">김준<b>홍</b><small>NETWORK / SECURITY ENGINEER</small></div><nav class="site-nav" aria-label="주요 메뉴">
   <a href="#about">소개</a><a href="#experience">경력</a><a href="#projects">프로젝트</a><a href="#skills">기술</a><a href="#story">이야기</a>
 </nav><div class="admin-spot"><button type="button" id="admin-toggle" class="admin-trigger" aria-label="패스키 로그인 메뉴 열기" aria-controls="admin-menu" aria-expanded="false" title="패스키 로그인"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>패스키 로그인</span></button><div id="admin-menu" class="admin-popover" hidden role="dialog" aria-label="패스키 로그인"><strong>패스키 로그인</strong><details class="account-advanced"><summary>계정 선택</summary><label for="login-account" class="sr-label">계정</label><select id="login-account" aria-label="로그인 계정"><option value="portfolio-owner">Portfolio Owner</option><option value="portfolio-reviewer">Portfolio Reviewer</option></select></details><div class="passkey-choices"><button type="button" id="passkey-login-action" class="passkey-action">이 기기에서 로그인</button><button type="button" id="passkey-phone-action" class="passkey-action secondary">휴대폰으로 로그인 요청</button></div><p id="passkey-status" class="passkey-status" role="status" aria-live="polite" hidden></p></div></div></header><main id="main-content"><section class="hero"><div class="intro"><div class="eyebrow">NETWORK VISUALIZATION</div><h1>김준홍</h1><div class="role">Network / <em>Security Engineer</em></div><p class="desc">연결의 흐름을 읽고, 문제의 원인을 좁혀갑니다.</p></div>
@@ -130,25 +149,56 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
  <div class="section-head"><span class="section-index">01 / ABOUT</span><h2>현장에서 시작한 네트워크 경험,<br><em>보안으로 넓어지는 시야.</em></h2>
  <p>네트워크 인프라에 대한 실무 경험을 바탕으로 네트워크 보안 분야를 공부하고 있습니다. 구성과 통신 흐름을 먼저 파악하고, 문제가 생기면 확인할 수 있는 근거부터 찾는 태도를 중요하게 생각합니다.</p></div>
  <div class="focus-grid">
-  <article class="focus-card"><span>01 — NETWORK</span><h3>연결 구조를 이해합니다.</h3><p>라우팅, VLAN, ACL, 장비 연결과 같은 네트워크 기본기를 토대로 통신 경로를 확인합니다.</p></article>
-  <article class="focus-card"><span>02 — SECURITY</span><h3>흐름 속에서 보안을 봅니다.</h3><p>방화벽, VPN, IDS·IPS를 실습하며 보안 정책과 패킷의 흐름을 함께 살펴봅니다.</p></article>
-  <article class="focus-card"><span>03 — TROUBLESHOOTING</span><h3>원인을 좁혀갑니다.</h3><p>설정과 로그, 네트워크 경로를 비교하며 문제가 발생한 구간을 확인합니다.</p></article>
+  <article class="focus-card"><span>01 — NETWORK</span><h3>연결 구조를 이해합니다.</h3><p>실제 장비 교체 현장에서 VLAN 설정 차이를 찾아낸 경험을 토대로, 연결 상태와 통신 구간을 함께 확인합니다.</p></article>
+  <article class="focus-card"><span>02 — SECURITY</span><h3>흐름 속에서 보안을 봅니다.</h3><p>방화벽·VPN·IPS를 구성하며 탐지 로그와 패킷 차단 여부가 같은 의미가 아니라는 점을 직접 검증했습니다.</p></article>
+  <article class="focus-card"><span>03 — TROUBLESHOOTING</span><h3>원인을 좁혀갑니다.</h3><p>설정과 로그를 확인한 뒤 실제 요청으로 결과를 재검증합니다. 해결 과정은 다시 확인할 수 있도록 정리합니다.</p></article>
  </div>
 </section>
 <section class="portfolio-content alternate" id="experience">
  <div class="section-head"><span class="section-index">02 / EXPERIENCE</span><h2>Experience</h2><p>네트워크 설치·보안 관련 실무를 경험했고, 현재는 보안 교육을 통해 기술 범위를 넓히고 있습니다.</p></div>
  <div class="experience-lines">
-  <article class="experience-line"><div class="exp-dates">2024.07 — 2025.10</div><div><span class="work-kind">WORK EXPERIENCE</span><h3>네트아이티</h3><p>네트워크 엔지니어 · 네트워크 설치 및 보안 관련 업무 경험</p></div></article>
+  <article class="experience-line"><div class="exp-dates">2024.07 — 2025.10</div><div><span class="work-kind">WORK EXPERIENCE</span><h3>네트워크 인프라 구축·보안 실무</h3><p>네트워크 장비 설치와 교체, 연결 상태 및 설정 점검을 경험했습니다. 장비의 정상 동작뿐 아니라 실제 통신이 복구됐는지 확인하는 과정을 배웠습니다.</p></div></article>
   <article class="experience-line"><div class="exp-dates">2026.08 — 진행 중</div><div><span class="work-kind">EDUCATION</span><h3>SKT ALEPH 보안 과정</h3><p>네트워크 보안, 침입 탐지·차단, 시스템 및 보안 실습</p></div></article>
  </div>
-  <article class="work-case"><span class="work-kind">FIELD NOTE · NETWORK TROUBLESHOOTING</span><h3>설정 차이를 발견하고, 담당 구간을 수정했습니다.</h3><p>장비 교체 후 통신이 되지 않던 현장에서 기존 장비와 신규 장비의 설정을 비교해 누락된 VLAN 구성을 발견했습니다. 저는 담당한 하위 스위치의 설정을 수정했고, 선배는 상위 장비를 조정했습니다. 각자의 작업을 마친 뒤 통신이 복구되었습니다.</p><span class="case-foot">문제 확인 → 설정 비교 → 담당 구간 수정 → 통신 복구 확인</span></article>
+  <article class="work-case"><span class="work-kind">FIELD NOTE · NETWORK TROUBLESHOOTING</span><h3>설정 차이를 발견하고, 담당 구간을 수정했습니다.</h3><p>장비 교체 후 통신이 되지 않던 현장에서 기존 장비와 신규 장비의 설정을 비교해 누락된 VLAN 구성을 발견했습니다. 저는 담당한 하위 스위치의 설정을 수정했고, 선배는 상위 장비를 조정했습니다. 각자의 작업을 마친 뒤 통신이 복구되었습니다. 제가 찾은 문제와 수정한 구간, 선배가 맡은 작업을 구분해 기록한 경험입니다.</p><span class="case-foot">문제 확인 → 설정 비교 → 담당 구간 수정 → 통신 복구 확인</span></article>
 </section>
 <section class="portfolio-content" id="projects">
- <div class="section-head"><span class="section-index">03 / PROJECTS</span><h2>설정에서 끝내지 않고,<br><em>직접 동작을 확인한 경험.</em></h2></div>
- <div class="project-grid">
-  <article class="project-card"><span class="project-type">NETWORK SECURITY LAB</span><h3>pfSense · Snort IPS 네트워크 구성</h3><p>VPN과 내부망, Inline IPS 구성을 실습하면서 실제 트래픽 경로와 탐지·차단 동작을 확인했습니다.</p><div class="skill-pills"><span>pfSense</span><span>Snort</span><span>GNS3</span></div></article>
-  <article class="project-card"><span class="project-type">TEAM PROJECT · WEB</span><h3>OISECURE 보안 워게임 제작</h3><p>팀 프로젝트에서 웹페이지 구현을 담당하고, 사용자가 이동할 수 있는 화면 구성과 일부 메뉴 아이디어를 제안했습니다.</p><div class="skill-pills"><span>Apache</span><span>PHP</span><span>MariaDB</span></div></article>
-  <article class="project-card"><span class="project-type">SECURITY MONITORING LAB</span><h3>보안 로그·모니터링 실습</h3><p>Wazuh, Zabbix, LogAnalyzer 등으로 서버와 네트워크의 상태·로그를 수집하고 확인하는 환경을 실습했습니다.</p><div class="skill-pills"><span>Linux</span><span>Wazuh</span><span>Zabbix</span></div></article>
+ <div class="section-head"><span class="section-index">03 / PROJECTS</span><h2>어떤 환경을 구성했고,<br><em>무엇을 직접 확인했는가.</em></h2>
+ <p>실무와 교육 실습, 팀 프로젝트를 구분했습니다. 사용한 도구의 수보다 제가 맡은 작업과 확인한 결과를 중심으로 정리했습니다.</p></div>
+ <div class="project-grid project-grid-detailed">
+  <article class="project-card">
+   <div class="project-head"><span class="project-type">NETWORK SECURITY · LAB</span><span class="project-kind">개인 실습</span></div>
+   <h3>pfSense · Snort IPS 네트워크 구성</h3>
+   <p class="project-lead">VPN에서 내부 서버까지 이어지는 통신 경로에 IPS를 배치하고, 탐지 메시지와 실제 차단 결과를 구분해 확인했습니다.</p>
+   <dl class="project-details">
+    <div><dt>구성</dt><dd>pfSense OpenVPN, 내부망, Snort Inline IPS 연결</dd></div>
+    <div><dt>문제 해결</dt><dd>경고는 표시되지만 패킷이 차단되지 않던 상황에서 통신 경로를 점검하고 브리지 구성을 수정</dd></div>
+    <div><dt>확인</dt><dd>실제 요청을 다시 전송해 차단 동작 검증</dd></div>
+   </dl>
+   <div class="skill-pills"><span>pfSense</span><span>Snort</span><span>OpenVPN</span><span>GNS3</span></div>
+  </article>
+  <article class="project-card project-featured">
+   <div class="project-head"><span class="project-type">TEAM PROJECT · CTF</span><span class="project-kind">웹페이지 담당</span></div>
+   <h3>OISECURE 보안 CTF 제작</h3>
+   <p class="project-lead">보안 취약점을 활용한 팀 CTF에서 웹페이지 구현을 맡고, 사용자가 탐색할 메뉴와 화면 구성 아이디어를 제안했습니다.</p>
+   <dl class="project-details">
+    <div><dt>담당</dt><dd>로그인·게시판·기록 보관함 등 웹페이지 구현과 구성 정리</dd></div>
+    <div><dt>직접 제안</dt><dd>업무 기록 보관함을 메뉴에서 찾아 들어갈 수 있도록 배치하는 아이디어</dd></div>
+    <div><dt>협업</dt><dd>팀원들과 페이지 흐름을 맞추고 사용자 입장에서 탐색 경로를 점검</dd></div>
+   </dl>
+   <div class="skill-pills"><span>Apache</span><span>PHP</span><span>MariaDB</span></div>
+  </article>
+  <article class="project-card">
+   <div class="project-head"><span class="project-type">SYSTEM · MONITORING LAB</span><span class="project-kind">환경 구성 실습</span></div>
+   <h3>서버 로그·모니터링 환경 구성</h3>
+   <p class="project-lead">Linux 서버에서 서비스 상태와 로그를 확인할 수 있도록 수집·조회 구성을 실습하고, 연결 문제도 점검했습니다.</p>
+   <dl class="project-details">
+    <div><dt>구성</dt><dd>rsyslog와 MariaDB를 연동한 LogAnalyzer 로그 조회 환경</dd></div>
+    <div><dt>점검</dt><dd>Zabbix Agent 연동과 서버 모니터링 설정 확인</dd></div>
+    <div><dt>학습</dt><dd>Wazuh Agent 통신 오류를 통해 관리 서버와 에이전트 연결 조건 점검</dd></div>
+   </dl>
+   <div class="skill-pills"><span>Linux</span><span>rsyslog</span><span>LogAnalyzer</span><span>Zabbix</span><span>Wazuh</span></div>
+  </article>
  </div>
 </section>
 <section class="portfolio-content alternate" id="skills">
