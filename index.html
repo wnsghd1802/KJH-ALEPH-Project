@@ -126,9 +126,45 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
 @media(max-width:1080px){.se-projects{grid-template-columns:repeat(2,minmax(0,1fr))}.se-projects .project-card{padding:23px}}
 @media(max-width:820px){.hero-context{max-width:unset;font-size:12px;margin-top:10px}.hero .role{font-size:clamp(22px,5.6vw,29px);margin:9px 0 12px;max-width:none}.hero .eyebrow{font-size:10px}.se-projects{grid-template-columns:1fr;gap:16px}.se-projects .project-card{padding:24px}.se-projects .project-head{gap:8px}.se-projects .project-lead{font-size:13px}.se-projects .project-details dd{font-size:12px}.se-skill-matrix>div{gap:4px}}
 @media(max-width:390px){.hero .role{font-size:22px}.hero-context{font-size:12px}.se-projects .project-details>div{grid-template-columns:44px minmax(0,1fr);gap:9px}}
+
+/* SE content enrichment: new architecture and technical notes sections */
+.lab-layout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.lab-card{display:flex;flex-direction:column;min-width:0;background:linear-gradient(145deg,#0e243b,#0a1728);border:1px solid #31517293;border-radius:17px;padding:26px;box-shadow:0 15px 42px #00000020}
+.lab-card-featured{border-color:#488cbb8a}
+.lab-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:10px;letter-spacing:.12em;font-weight:750;color:#7abfff}
+.lab-card-head small{font-size:10px;letter-spacing:0;color:#97acc7;font-weight:500}
+.lab-card h3{font-size:19px;line-height:1.45;letter-spacing:-.03em;word-break:keep-all;margin:18px 0 18px;color:#e9f4ff}
+.lab-card p{color:#a3bedb;line-height:1.85;font-size:12.5px;margin:20px 0;flex:1}
+.lab-flow{display:flex;align-items:stretch;gap:4px;min-height:74px;overflow:visible}
+.lab-flow span{display:flex;align-items:center;justify-content:center;min-width:0;flex:1 1 0;padding:8px 5px;font-size:10.5px;line-height:1.5;font-weight:650;text-align:center;color:#d9f0ff;background:#173450;border:1px solid #397db0a6;border-radius:8px;word-break:keep-all}
+.lab-flow i{align-self:center;color:#65bcf6;font-weight:750;font-style:normal;flex:0 0 auto}
+.lab-independent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;min-height:74px}
+.lab-independent>span{border:1px solid #397db0a6;background:#173450;border-radius:8px;padding:11px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px}
+.lab-independent strong{font-size:10.5px;color:#dbf0ff;line-height:1.35;word-break:keep-all}
+.lab-independent small{font-size:9.5px;color:#9ec4e9}
+.lab-footer{border-top:1px solid #2b506d;padding-top:14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;font-size:10.5px}
+.lab-footer span{color:#719dc5;white-space:nowrap}
+.lab-footer strong{font-weight:550;text-align:right;color:#d7e9fd;line-height:1.6}
+.evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.evidence-card{background:linear-gradient(145deg,#10243c,#0a1728);border:1px solid #35557578;border-radius:16px;padding:28px 30px;min-width:0}
+.evidence-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.evidence-top>span{font-size:10px;letter-spacing:.14em;color:#7aaff0;font-weight:750}
+.evidence-state{font-size:10px;padding:5px 9px;border:1px solid #44769c;border-radius:30px;font-weight:600;white-space:nowrap;color:#a8d4ff}
+.evidence-state.pending{color:#eacaa6;border-color:#8b704b}
+.evidence-card h3{font-size:20px;line-height:1.45;letter-spacing:-.03em;color:#eef7ff;margin:17px 0 9px}
+.evidence-signal{font-size:11.5px;color:#a9bbcf;margin:0 0 22px;line-height:1.9}
+.evidence-signal code{font-family:ui-monospace,Consolas,monospace;color:#9fd4ff;background:#19314b;padding:3px 6px;border-radius:5px;font-size:11px;overflow-wrap:anywhere;word-break:break-word}
+.evidence-card dl{margin:0;display:grid;gap:11px}.evidence-card dl div{display:grid;grid-template-columns:48px minmax(0,1fr);gap:12px;border-top:1px solid #2b48655e;padding-top:12px}.evidence-card dt{font-size:11px;color:#78a7d5;line-height:1.8}.evidence-card dd{margin:0;font-size:12.5px;line-height:1.8;color:#c3d6ec;word-break:keep-all}.evidence-card dd strong{color:#f1c5a2;font-weight:550}
+.method-line{margin-top:21px;border:1px solid #35557578;background:#0b1d31;border-radius:14px;padding:16px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;line-height:1.8;color:#cee3f6;font-size:12px}
+.method-line span{font-size:11px;color:#6eaaf0;letter-spacing:.08em;margin-right:15px}.method-line strong{font-weight:550}.method-line b{color:#508dbd}
+@media(max-width:1210px){.lab-layout{grid-template-columns:1fr 1fr}.lab-card-featured{grid-column:1/-1}.lab-card-featured .lab-flow{max-width:610px}.site-nav{gap:12px}.site-nav a{font-size:12px}}
+@media(max-width:940px){.lab-layout,.evidence-grid{grid-template-columns:1fr}.lab-card-featured{grid-column:auto}.lab-card-featured .lab-flow{max-width:none}}
+@media(max-width:820px){.lab-card,.evidence-card{padding:23px}.lab-flow span{font-size:10px}.lab-flow{gap:3px}.lab-independent{gap:6px}.evidence-card h3{font-size:18px}.method-line{gap:7px;padding:14px}.method-line span{flex-basis:100%}}
+@media(max-width:350px){.lab-flow span{font-size:9px;padding:8px 2px}.lab-independent strong{font-size:9px}.evidence-card dl div{gap:8px;grid-template-columns:40px 1fr}}
+
 </style></head><body>
 <header class="top" id="home"><div class="brand">김준<b>홍</b><small>SYSTEM / INFRASTRUCTURE · CAREER DIRECTION</small></div><nav class="site-nav" aria-label="주요 메뉴">
-  <a href="#about">소개</a><a href="#experience">경력</a><a href="#projects">프로젝트</a><a href="#skills">기술</a><a href="#story">이야기</a>
+  <a href="#about">소개</a><a href="#experience">경력</a><a href="#lab-map">구성 환경</a><a href="#projects">프로젝트</a><a href="#notes">검증 기록</a><a href="#skills">기술</a><a href="#story">이야기</a>
 </nav><div class="admin-spot"><button type="button" id="admin-toggle" class="admin-trigger" aria-label="패스키 로그인 메뉴 열기" aria-controls="admin-menu" aria-expanded="false" title="패스키 로그인"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>패스키 로그인</span></button><div id="admin-menu" class="admin-popover" hidden role="dialog" aria-label="패스키 로그인"><strong>패스키 로그인</strong><details class="account-advanced"><summary>계정 선택</summary><label for="login-account" class="sr-label">계정</label><select id="login-account" aria-label="로그인 계정"><option value="portfolio-owner">Portfolio Owner</option><option value="portfolio-reviewer">Portfolio Reviewer</option></select></details><div class="passkey-choices"><button type="button" id="passkey-login-action" class="passkey-action">이 기기에서 로그인</button><button type="button" id="passkey-phone-action" class="passkey-action secondary">휴대폰으로 로그인 요청</button></div><p id="passkey-status" class="passkey-status" role="status" aria-live="polite" hidden></p></div></div></header><main id="main-content"><section class="hero"><div class="intro"><div class="eyebrow">NETWORK FOUNDATION · LINUX &amp; SERVICES</div><h1>김준홍</h1><div class="role">System / <em>Infrastructure Engineer</em></div><p class="desc">연결의 흐름을 읽고, 문제의 원인을 좁혀갑니다.</p><p class="hero-context">네트워크 장비 설치·점검 실무 경험을 바탕으로, Linux 서버 구성과 서비스 상태 확인·로그 분석 역량을 교육 실습에서 넓히고 있습니다.</p></div>
 <div class="canvas"><svg id="network" class="isometric" viewBox="0 0 1030 620" role="img" aria-label="원본 아이소메트릭 네트워크 그림에 순차적으로 파란 통신선이 밝혀지고 방화벽, IPS, 스위치, 클라이언트, 서버, DMZ, 내부망 순서로 장비가 밝아지는 시연" xmlns="http://www.w3.org/2000/svg">
 <defs>
@@ -183,8 +219,46 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
  </div>
  <article class="work-case"><span class="work-kind">FIELD NOTE · NETWORK TROUBLESHOOTING</span><h3>설정 차이를 발견하고, 담당 구간을 수정했습니다.</h3><p>장비 교체 후 통신이 되지 않던 현장에서 기존 장비와 신규 장비의 설정을 비교해 누락된 VLAN 구성을 발견했습니다. 저는 담당한 하위 스위치의 설정을 수정했고, 선배는 상위 장비를 조정했습니다. 각자의 작업을 마친 뒤 통신이 복구되었습니다. 제가 찾은 문제와 수정한 구간, 선배가 맡은 작업을 구분해 기록한 경험입니다.</p><span class="case-foot">문제 확인 → 설정 비교 → 담당 구간 수정 → 통신 복구 확인</span></article>
 </section>
+
+<section class="portfolio-content alternate" id="lab-map">
+ <div class="section-head"><span class="section-index">03 / INFRASTRUCTURE LAB</span>
+  <h2>구성한 환경을<br><em>서비스 흐름으로 보여드립니다.</em></h2>
+  <p>실무 경력과 별도로 진행한 교육·개인 실습을 목적별로 정리했습니다. 아래 세 구성은 <strong>서로 다른 실습</strong>이며, 하나의 상용 통합 시스템을 운영한 경험을 뜻하지 않습니다.</p>
+ </div>
+ <div class="lab-layout">
+  <article class="lab-card lab-card-featured">
+   <div class="lab-card-head"><span>01 · LOGGING</span><small>Linux · 로그 조회 실습</small></div>
+   <h3>로그가 저장되고 조회되기까지</h3>
+   <div class="lab-flow" role="img" aria-label="Linux 로그에서 rsyslog를 거쳐 MariaDB에 저장되고 LogAnalyzer에서 조회하는 구성">
+    <span>Linux 로그</span><i aria-hidden="true">→</i><span>rsyslog</span><i aria-hidden="true">→</i><span>MariaDB</span><i aria-hidden="true">→</i><span>LogAnalyzer</span>
+   </div>
+   <p>rsyslog의 DB 출력 설정과 웹 조회 환경을 구성했습니다. 에이전트 상태 점검은 별도 실습으로 구분합니다.</p>
+   <div class="lab-footer"><span>확인 내용</span><strong>LogAnalyzer 조회 환경 구성</strong></div>
+  </article>
+  <article class="lab-card">
+   <div class="lab-card-head"><span>02 · SERVICE</span><small>Linux · 개별 서비스 실습</small></div>
+   <h3>웹·DB·DNS의 설정 확인</h3>
+   <div class="lab-independent" aria-label="각각 구성한 세 가지 개별 서비스">
+    <span><strong>Apache / PHP</strong><small>웹 서비스</small></span>
+    <span><strong>MariaDB</strong><small>DB 설정</small></span>
+    <span><strong>BIND DNS</strong><small>Zone 파일</small></span>
+   </div>
+   <p>세 서비스를 개별적으로 설치·설정하며 동작을 살폈습니다. DNS에서는 NS 주소 레코드 누락 오류를 수정했습니다.</p>
+   <div class="lab-footer"><span>구성 범위</span><strong>단일 운영 서비스로 결합한 결과는 아님</strong></div>
+  </article>
+  <article class="lab-card">
+   <div class="lab-card-head"><span>03 · NETWORK PATH</span><small>GNS3 · 보안 경로 실습</small></div>
+   <h3>서버로 향하는 통신 경로 검증</h3>
+   <div class="lab-flow" role="img" aria-label="외부 클라이언트에서 pfSense와 Snort IPS를 지나 내부 서버에 도달하는 구성">
+    <span>외부</span><i aria-hidden="true">→</i><span>pfSense</span><i aria-hidden="true">→</i><span>Snort IPS</span><i aria-hidden="true">→</i><span>내부 서버</span>
+   </div>
+   <p>탐지 로그만으로 차단을 판단하지 않고, 인터페이스·브리지 경로를 수정한 뒤 실제 요청 결과를 확인했습니다.</p>
+   <div class="lab-footer"><span>검증 관점</span><strong>탐지 표시와 실제 차단의 차이</strong></div>
+  </article>
+ </div>
+</section>
 <section class="portfolio-content" id="projects">
- <div class="section-head"><span class="section-index">03 / PROJECTS</span><h2>서버를 구성하고,<br><em>로그와 동작으로 확인했습니다.</em></h2>
+ <div class="section-head"><span class="section-index">04 / PROJECTS</span><h2>서버를 구성하고,<br><em>로그와 동작으로 확인했습니다.</em></h2>
  <p>다음은 <strong>교육·개인 실습</strong>과 <strong>팀 프로젝트</strong>입니다. 여러 실습을 상용 환경의 운영 경력처럼 표현하지 않고, 구성 환경·문제·직접 수행한 조치·확인 결과를 구분했습니다.</p></div>
  <div class="project-grid project-grid-detailed se-projects">
   <article class="project-card project-featured">
@@ -237,8 +311,42 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
   </article>
  </div>
 </section>
+
+<section class="portfolio-content alternate" id="notes">
+ <div class="section-head"><span class="section-index">05 / VALIDATION NOTES</span>
+  <h2>설치 여부보다,<br><em>무엇을 확인했는지 기록합니다.</em></h2>
+  <p>실제 실무와 실습에서 마주한 사례를 <strong>확인된 결과 중심</strong>으로 정리했습니다. 독립적인 SE 장애 대응 실적을 새로 만들어 낸 내용이 아닙니다.</p>
+ </div>
+ <div class="evidence-grid">
+  <article class="evidence-card">
+   <div class="evidence-top"><span>01 / DNS CONFIG</span><small class="evidence-state complete">설정 오류 수정</small></div>
+   <h3>NS 대상 주소 누락</h3>
+   <p class="evidence-signal">확인한 메시지 <code>NS has no address records</code></p>
+   <dl><div><dt>상황</dt><dd>BIND 영역 파일에서 NS 대상으로 지정된 이름에 주소 레코드가 빠져 있었습니다.</dd></div><div><dt>조치</dt><dd>NS 대상과 A 레코드의 관계를 확인하고 누락된 주소 정보를 보완했습니다.</dd></div><div><dt>결과</dt><dd>해당 DNS 설정 오류를 수정했습니다.</dd></div></dl>
+  </article>
+  <article class="evidence-card">
+   <div class="evidence-top"><span>02 / LOG COLLECTION</span><small class="evidence-state complete">조회 환경 구성</small></div>
+   <h3>수집부터 웹 조회까지</h3>
+   <p class="evidence-signal">확인 지점 <code>rsyslog → DB → LogAnalyzer</code></p>
+   <dl><div><dt>상황</dt><dd>수집된 로그를 DB에 저장하고 웹에서 조회할 수 있어야 했습니다.</dd></div><div><dt>조치</dt><dd>rsyslog 출력과 MariaDB 연동, LogAnalyzer 웹 환경을 구성했습니다.</dd></div><div><dt>결과</dt><dd>로그 조회 환경 구성까지 완료한 실습입니다.</dd></div></dl>
+  </article>
+  <article class="evidence-card">
+   <div class="evidence-top"><span>03 / INLINE IPS</span><small class="evidence-state complete">차단 동작 확인</small></div>
+   <h3>DROP 로그와 실제 차단의 차이</h3>
+   <p class="evidence-signal">확인 기준 <code>요청 재전송 결과</code></p>
+   <dl><div><dt>상황</dt><dd>IPS에서 DROP 메시지는 보였지만 실제 통신은 차단되지 않았습니다.</dd></div><div><dt>조치</dt><dd>패킷의 실제 경유 경로를 추적해 인터페이스·브리지 구성을 수정했습니다.</dd></div><div><dt>결과</dt><dd>동일한 요청을 다시 보내 실제 차단을 확인했습니다.</dd></div></dl>
+  </article>
+  <article class="evidence-card">
+   <div class="evidence-top"><span>04 / AGENT CONNECTION</span><small class="evidence-state pending">연결 문제 점검</small></div>
+   <h3>Wazuh Agent 연결 거부</h3>
+   <p class="evidence-signal">확인한 현상 <code>1514/TCP 연결 거부</code></p>
+   <dl><div><dt>상황</dt><dd>에이전트에서 관리 서버로 연결할 때 거부 응답이 발생했습니다.</dd></div><div><dt>조치</dt><dd>관리 서버의 수신 설정과 통신 포트 확인이 필요하다는 점을 정리했습니다.</dd></div><div><dt>결과</dt><dd>원인 점검 단계의 기록입니다. <strong>정상 연동 완료로 표시하지 않습니다.</strong></dd></div></dl>
+  </article>
+ </div>
+ <div class="method-line"><span>확인 순서</span><strong>증상 관찰</strong><b>→</b><strong>설정·경로 비교</strong><b>→</b><strong>담당 범위 수정</strong><b>→</b><strong>동작 재확인</strong></div>
+</section>
 <section class="portfolio-content alternate" id="skills">
- <div class="section-head"><span class="section-index">04 / SKILLS</span><h2>Technical Stack</h2><p>실무에서 사용한 기술과 교육·개인 실습으로 다뤄본 기술을 구분했습니다. 나열된 기술이 모두 동일한 숙련도나 운영 경력을 뜻하지는 않습니다.</p></div>
+ <div class="section-head"><span class="section-index">06 / SKILLS</span><h2>Technical Stack</h2><p>실무에서 사용한 기술과 교육·개인 실습으로 다뤄본 기술을 구분했습니다. 나열된 기술이 모두 동일한 숙련도나 운영 경력을 뜻하지는 않습니다.</p></div>
  <div class="skill-matrix se-skill-matrix">
   <div><h3>LINUX / SERVICES <small>교육·개인 실습</small></h3><p>Ubuntu · Rocky Linux · Apache · PHP · MariaDB · BIND DNS</p></div>
   <div><h3>LOGGING / MONITORING <small>구성·연동 점검 실습</small></h3><p>rsyslog · LogAnalyzer · Zabbix Agent · Wazuh Agent (연결 문제 점검)</p></div>
@@ -248,7 +356,7 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
  <div class="cert-row"><span>자격</span><strong>정보보안산업기사</strong><strong>네트워크관리사 2급</strong><strong>리눅스마스터 2급</strong></div>
 </section>
 <section class="portfolio-content" id="strengths">
- <div class="section-head"><span class="section-index">05 / APPROACH</span><h2>어떤 태도로 일하는가</h2></div>
+ <div class="section-head"><span class="section-index">07 / APPROACH</span><h2>어떤 태도로 일하는가</h2></div>
  <div class="focus-grid approach-grid">
   <article class="focus-card"><span>ADAPTABILITY</span><h3>상황을 차분히 정리합니다.</h3><p>예상하지 못한 상황에서도 필요한 업무와 대응을 우선합니다.</p></article>
   <article class="focus-card"><span>CONCENTRATION</span><h3>한 가지 일에 집중합니다.</h3><p>문제 해결을 위한 작업에 몰입하는 편이며, 필요한 내용은 다시 확인합니다.</p></article>
@@ -256,7 +364,7 @@ button{background:#101e33;border:1px solid #436389;color:#e5f1ff;padding:11px 17
  </div>
 </section>
 <section class="portfolio-content story-section alternate" id="story">
-  <div class="section-head"><span class="section-index">06 / MY STORY</span><h2>가장 보통의 삶,<br><em>그리고 다음 걸음.</em></h2></div>
+  <div class="section-head"><span class="section-index">08 / MY STORY</span><h2>가장 보통의 삶,<br><em>그리고 다음 걸음.</em></h2></div>
   <div class="story-body">
     <p>살아오면서 익숙했던 환경이 달라지는 순간들을 여러 번 마주했습니다. 새로운 곳에 적응해야 했고, 첫 직장에서는 배운 것을 실제 업무에 적용하는 일이 생각만큼 쉽지 않다는 것도 알게 되었습니다.</p>
     <p>그 과정에서 혼자 해낸 일도 있었지만, 주변 사람들의 도움으로 배운 것이 더 많았습니다. 잘했던 순간뿐 아니라 서툴렀던 순간도 지금의 저를 이루는 경험이라고 생각합니다.</p>
