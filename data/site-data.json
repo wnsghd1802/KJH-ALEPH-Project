@@ -1,0 +1,14 @@
+{
+  "approved_paragraphs": [],
+  "metrics": {
+    "denominator_note": "리추얼 기록에 존재하는 날짜 수이며 출석일수·출석률이 아닙니다.",
+    "first_date": "2026-08-11",
+    "full": 18,
+    "last_date": "2026-10-21",
+    "not_done": 6,
+    "partial": 20,
+    "ritual_days": 44,
+    "source": "리추얼 기록 (2026-08-11~2026-10-21 기준 데이터, 이후 교체 가능)",
+    "weeks_with_entries": 11
+  }
+}
